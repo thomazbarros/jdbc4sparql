@@ -11,12 +11,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.LinkedList;
 
@@ -33,21 +35,32 @@ public class SPARQLConnection implements Connection {
 	private boolean readOnly;
 	private boolean autoCommit;
 	private boolean closed;
+	private Map<String, Class<?>> typeMap;
+	private String endPoint;
 	
 	public SPARQLConnection(String connectionURL)throws SQLException {
-		
+		this.connectionURL = connectionURL;
+        try {
+            this.init();
+        }
+        catch (Exception e) {
+            throw new SQLException(e.getMessage());
+        }
 	}
 	
 	public SPARQLConnection() {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void init() throws SQLException {
 		this.holdability = ResultSet.CLOSE_CURSORS_AT_COMMIT;
         this.transactionIsolation = Connection.TRANSACTION_NONE;
         this.autoCommit = true;
         this.readOnly = false;
         this.closed = false;
+        this.typeMap = (Map)new HashMap();
+        this.endPoint = this.connectionURL.split("?")[0];
         String[] parameters = this.connectionURL.split("?")[1].split("&");
         for (int x = 0; x < parameters.length; x++) {
         	if (parameters[x].split("=")[0] == "default-graph-uri") {
@@ -88,22 +101,19 @@ public class SPARQLConnection implements Connection {
 		return null;
 	}
 
-	@Override
+	
 	public Clob createClob() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public NClob createNClob() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public SQLXML createSQLXML() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	@Override
@@ -125,10 +135,9 @@ public class SPARQLConnection implements Connection {
 		return null;
 	}
 
-	@Override
+	
 	public Struct createStruct(String arg0, Object[] arg1) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	public boolean getAutoCommit() throws SQLException {
@@ -153,9 +162,9 @@ public class SPARQLConnection implements Connection {
 		return null;
 	}
 
-	@Override
+	
 	public int getHoldability() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return this.holdability;
 	}
 
@@ -165,137 +174,120 @@ public class SPARQLConnection implements Connection {
 		return null;
 	}
 
-	@Override
+	
 	public int getTransactionIsolation() throws SQLException {
-		// TODO Auto-generated method stub
 		return this.transactionIsolation;
 	}
 
-	@Override
+	
 	public Map<String, Class<?>> getTypeMap() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.typeMap;
 	}
 
-	@Override
+	
 	public SQLWarning getWarnings() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
-	@Override
+	
 	public boolean isClosed() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return this.closed;
 	}
 
-	@Override
+	
 	public boolean isReadOnly() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return this.readOnly;
 	}
 
-	@Override
+	
 	public boolean isValid(int arg0) throws SQLException {
 		if (this.closed) return false;
 		else return true;
 	}
 
-	@Override
+	
 	public String nativeSQL(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public CallableStatement prepareCall(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public CallableStatement prepareCall(String arg0, int arg1, int arg2)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public CallableStatement prepareCall(String arg0, int arg1, int arg2,
 			int arg3) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public PreparedStatement prepareStatement(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public PreparedStatement prepareStatement(String arg0, int arg1)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public PreparedStatement prepareStatement(String arg0, int[] arg1)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public PreparedStatement prepareStatement(String arg0, String[] arg1)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public PreparedStatement prepareStatement(String arg0, int arg1, int arg2)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public PreparedStatement prepareStatement(String arg0, int arg1, int arg2,
 			int arg3) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void releaseSavepoint(Savepoint arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
-	@Override
+	
 	public void rollback() throws SQLException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
-	@Override
+	
 	public void rollback(Savepoint arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
-	@Override
-	public void setAutoCommit(boolean arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+	
+	public void setAutoCommit(boolean autoCommit) throws SQLException {
+		this.autoCommit = autoCommit;
 	}
 
-	@Override
+	
 	public void setCatalog(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -311,52 +303,44 @@ public class SPARQLConnection implements Connection {
 
 	}
 
-	@Override
-	public void setHoldability(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+	
+	public void setHoldability(int holdability) throws SQLException {
+		this.holdability = holdability;
 	}
 
-	@Override
+	
 	public void setReadOnly(boolean arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
-	@Override
+	
 	public Savepoint setSavepoint() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public Savepoint setSavepoint(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
-	public void setTransactionIsolation(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+	
+	public void setTransactionIsolation(int transactionIsolation) throws SQLException {
+		this.transactionIsolation = transactionIsolation;
 	}
 
-	@Override
-	public void setTypeMap(Map<String, Class<?>> arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+	
+	public void setTypeMap(Map<String, Class<?>> typeMap) throws SQLException {
+		this.typeMap = typeMap;
 	}
 
-	@Override
+	
 	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public <T> T unwrap(Class<T> arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 	
 	public String getUsername() {
@@ -393,6 +377,14 @@ public class SPARQLConnection implements Connection {
 	
 	public void setConnectionURL (String connectionURL) {
 		this.connectionURL = connectionURL;
+	}
+	
+	public String getEndPoint() {
+		return this.endPoint;
+	}
+	
+	public void setEndPoint(String endPoint) {
+		this.endPoint = endPoint;
 	}
 
 }
