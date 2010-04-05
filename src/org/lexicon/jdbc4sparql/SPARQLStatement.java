@@ -3,47 +3,82 @@ package org.lexicon.jdbc4sparql;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import com.hp.hpl.jena.query.*;
+import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.List;
 
 public class SPARQLStatement implements Statement {
 
 	private SPARQLConnection conn;
-		
-	@Override
-	public void addBatch(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+	private ResultSet resultSet;
+	private LinkedList<String> batches;
+	
+	public SPARQLStatement(SPARQLConnection conn) {
+		this.conn = conn;
+		this.batches = new LinkedList();
+	}
+	
+	
+	public void addBatch(String sparql) throws SQLException {
+		this.batches.add(sparql);
 	}
 
-	@Override
+	
 	public void cancel() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void clearBatch() throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.batches.clear();
 	}
 
-	@Override
+	
 	public void clearWarnings() throws SQLException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
-	@Override
+	
 	public void close() throws SQLException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
-	public boolean execute(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean execute(String sparql) throws SQLException {
+		try {
+			Query query = QueryFactory.create(sparql);
+			if (query.isSelectType()){
+				QueryExecution queryExecution = QueryExecutionFactory.sparqlService(this.conn.getEndPoint(), query, this.conn.getDefaultGraphs(), this.conn.getNamedGraphs());
+				this.resultSet = new SPARQLSelectResultSet(queryExecution.execSelect());
+				return true;
+			}
+			if (query.isConstructType()){
+				QueryExecution queryExecution = QueryExecutionFactory.sparqlService(this.conn.getEndPoint(), query, this.conn.getDefaultGraphs(), this.conn.getNamedGraphs());
+				this.resultSet = new SPARQLConstructResultSet(queryExecution.execConstruct());
+				return true;
+			}
+			if (query.isDescribeType()){
+				QueryExecution queryExecution = QueryExecutionFactory.sparqlService(this.conn.getEndPoint(), query, this.conn.getDefaultGraphs(), this.conn.getNamedGraphs());
+				this.resultSet = new SPARQLConstructResultSet(queryExecution.execDescribe());
+				return true;
+			}
+			if (query.isAskType()){
+				//TODO
+				return true;
+			}
+			if (query.isUnknownType()){
+				//TODO
+				return true;
+			}
+			return false;
+		}
+		catch (Exception e) {
+			throw new SQLException (e.getMessage());
+		}
 	}
 
 	@Override
@@ -102,8 +137,7 @@ public class SPARQLStatement implements Statement {
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.conn;
 	}
 
 	@Override
