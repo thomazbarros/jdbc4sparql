@@ -21,20 +21,50 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Vector;
 import com.hp.hpl.jena.query.*;
+import java.util.List;
 
 public class SPARQLSelectResultSet implements ResultSet {
 
 	private com.hp.hpl.jena.query.ResultSet resultSet;
+	private SPARQLStatement statement;
+	private int currentRow;
+	private int type;
+	private Vector<QuerySolution> internalResultSet;
+	private Vector<String> columnNames;
 	
-	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet){
+	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement){
+		this.statement = statement;
 		this.resultSet = resultSet;
+		this.currentRow = 0;
+		this.type = ResultSet.TYPE_FORWARD_ONLY;
+		this.internalResultSet = new Vector<QuerySolution>();
+		this.columnNames = new Vector<String>(this.resultSet.getResultVars());
+		while (this.resultSet.hasNext()) {
+			this.resultSet.next();
+			this.internalResultSet.add(this.resultSet.next());
+		}
 	}
 	
-	@Override
+	
 	public boolean absolute(int row) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (row > this.internalResultSet.size() || row <= -2) {
+			this.afterLast();
+			return false;
+		}
+		else if (row == -1) {
+			this.last();
+			return true;
+		}
+		else if (row == 1) {
+			this.first();
+			return true;
+		}
+		else {
+			this.currentRow = row;
+			return true;
+		}
 	}
 
 	@Override
