@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Graph;
@@ -60,9 +61,15 @@ import com.hp.hpl.jena.shared.ReificationStyle;
 public class SPARQLConstructResultSet implements ResultSet, Model {
 
 	private Model model;
+	private Vector<Statement> internalResultSet; 
 	
 	public SPARQLConstructResultSet (Model model) {
 		this.model = model;
+		this.internalResultSet = new Vector<Statement>();
+		StmtIterator stmtIterator = this.model.listStatements();
+		while (stmtIterator.hasNext()){
+			this.internalResultSet.add((Statement)stmtIterator.nextStatement());
+		}
 	}
 	
 	@Override
