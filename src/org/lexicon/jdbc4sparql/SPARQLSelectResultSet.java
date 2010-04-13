@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Statement;
@@ -33,11 +34,15 @@ public class SPARQLSelectResultSet implements ResultSet {
 	private int type;
 	private Vector<QuerySolution> internalResultSet;
 	private Vector<String> columnNames;
+	private boolean closed;
+	private SPARQLSelectResultSetMetaData rsm;
 	
 	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement){
 		this.statement = statement;
 		this.resultSet = resultSet;
 		this.currentRow = 0;
+		this.closed = false;
+		this.rsm = new SPARQLSelectResultSetMetaData(this);
 		this.type = ResultSet.TYPE_FORWARD_ONLY;
 		this.internalResultSet = new Vector<QuerySolution>();
 		this.columnNames = new Vector<String>(this.resultSet.getResultVars());
@@ -49,103 +54,113 @@ public class SPARQLSelectResultSet implements ResultSet {
 	
 	
 	public boolean absolute(int row) throws SQLException {
-		if (row > this.internalResultSet.size() || row <= -2) {
-			this.afterLast();
-			return false;
-		}
-		else if (row == -1) {
-			this.last();
-			return true;
-		}
-		else if (row == 1) {
-			this.first();
-			return true;
+		if (this.closed) {
+			throw new SQLException("Resultset closed");
 		}
 		else {
-			this.currentRow = row;
-			return true;
+			if (row > this.internalResultSet.size() || row <= -2) {
+				this.afterLast();
+				return false;
+			}
+			else if (row == -1) {
+				this.last();
+				return true;
+			}
+			else if (row == 1) {
+				this.first();
+				return true;
+			}
+			else {
+				this.currentRow = row;
+				return true;
+			}
 		}
 	}
 
-	@Override
+	
 	public void afterLast() throws SQLException {
-		// TODO Auto-generated method stub
-
+		if (this.closed) {
+			throw new SQLException("Resultset closed");
+		}
+		else {
+			this.currentRow = this.internalResultSet.size() + 1;
+		}
 	}
 
-	@Override
+	
 	public void beforeFirst() throws SQLException {
-		// TODO Auto-generated method stub
-
+		if (this.closed) {
+			throw new SQLException("Resultset closed");
+		}
+		else {
+			this.currentRow = 0;
+		}
 	}
 
-	@Override
+	
 	public void cancelRowUpdates() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void clearWarnings() throws SQLException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
-	@Override
+	
 	public void close() throws SQLException {
-		// TODO Auto-generated method stub
-
+		this.closed = true;
 	}
 
-	@Override
+	
 	public void deleteRow() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public int findColumn(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.columnNames.indexOf(columnLabel);
 	}
 
-	@Override
+	
 	public boolean first() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.closed) {
+			throw new SQLException("Resultset closed");
+		}
+		else {
+			if (this.internalResultSet.size() > 0) {
+				this.currentRow = 1;
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
-	@Override
 	public Array getArray(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public Array getArray(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+
 	public InputStream getAsciiStream(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public InputStream getAsciiStream(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
+		// TODO
 		return null;
 	}
 
-	@Override
 	public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;

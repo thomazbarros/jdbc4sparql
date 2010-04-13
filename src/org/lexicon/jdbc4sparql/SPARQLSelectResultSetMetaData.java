@@ -2,11 +2,15 @@ package org.lexicon.jdbc4sparql;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import org.lexicon.jdbc4sparql.SPARQLSelectResultSet;
 
 public class SPARQLSelectResultSetMetaData implements ResultSetMetaData {
 
-	public SPARQLSelectResultSetMetaData() {
-		
+	private SPARQLSelectResultSet rs;
+	
+	public SPARQLSelectResultSetMetaData(SPARQLSelectResultSet rs) {
+		this.rs = rs;
 	}
 	
 	
