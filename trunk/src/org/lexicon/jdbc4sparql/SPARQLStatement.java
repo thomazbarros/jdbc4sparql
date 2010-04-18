@@ -53,7 +53,7 @@ public class SPARQLStatement implements Statement {
 			Query query = QueryFactory.create(sparql);
 			if (query.isSelectType()){
 				QueryExecution queryExecution = QueryExecutionFactory.sparqlService(this.conn.getEndPoint(), query, this.conn.getDefaultGraphs(), this.conn.getNamedGraphs());
-				this.resultSet = new SPARQLSelectResultSet(queryExecution.execSelect(), this);
+				this.resultSet = new SPARQLSelectResultSet(queryExecution.execSelect(), this, query);
 				return true;
 			}
 			if (query.isConstructType()){

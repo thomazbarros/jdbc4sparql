@@ -57,11 +57,13 @@ import com.hp.hpl.jena.shared.Command;
 import com.hp.hpl.jena.shared.Lock;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.shared.ReificationStyle;
+import com.hp.hpl.jena.query.*;
 
 public class SPARQLConstructResultSet implements ResultSet, Model {
 
 	private Model model;
 	private Vector<Statement> internalResultSet; 
+	private Query sparql;
 	
 	public SPARQLConstructResultSet (Model model) {
 		this.model = model;
