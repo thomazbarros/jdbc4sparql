@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Vector;
 import com.hp.hpl.jena.query.*;
 import java.util.List;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.datatypes.xsd.*;
 
 public class SPARQLSelectResultSet implements ResultSet {
 
@@ -36,12 +40,18 @@ public class SPARQLSelectResultSet implements ResultSet {
 	private Vector<String> columnNames;
 	private boolean closed;
 	private SPARQLSelectResultSetMetaData rsm;
+	private int concurrency;
+	private int fetchDirection;
+	private Query sparql;
 	
-	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement){
+	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement, Query sqarql){
 		this.statement = statement;
 		this.resultSet = resultSet;
 		this.currentRow = 0;
 		this.closed = false;
+		this.sparql = sparql;
+		this.fetchDirection = ResultSet.FETCH_FORWARD;
+		this.concurrency = ResultSet.CONCUR_READ_ONLY;
 		this.rsm = new SPARQLSelectResultSetMetaData(this);
 		this.type = ResultSet.TYPE_FORWARD_ONLY;
 		this.internalResultSet = new Vector<QuerySolution>();
@@ -52,6 +62,13 @@ public class SPARQLSelectResultSet implements ResultSet {
 		}
 	}
 	
+	public Vector<String> getColumnNames() {
+		return this.columnNames;
+	}
+	
+	public Vector<QuerySolution> getInternalResultSet () {
+		return this.internalResultSet;
+	}
 	
 	public boolean absolute(int row) throws SQLException {
 		if (this.closed) {
@@ -139,45 +156,72 @@ public class SPARQLSelectResultSet implements ResultSet {
 	}
 
 	public Array getArray(int columnIndex) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+		return null;
 	}
 
 	
 	public Array getArray(String columnLabel) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+		return null;
 	}
 
 
 	public InputStream getAsciiStream(int columnIndex) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+		return null;
 	}
 
 	public InputStream getAsciiStream(String columnLabel) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+		return null;
 	}
 
 	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
-		// TODO
-		return null;
+		try {
+			return new BigDecimal(this.getString(columnIndex));
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
+		
 	}
 
 	public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return new BigDecimal(this.getString(columnLabel));
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
 	public BigDecimal getBigDecimal(int columnIndex, int scale)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			String result = this.getString(columnIndex);
+			if (result.indexOf(".") > 0) {
+				int count = result.indexOf(".") + scale;
+				result = result.substring(0, count);
+			}
+			return new BigDecimal(result);
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
 	public BigDecimal getBigDecimal(String columnLabel, int scale)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			String result = this.getString(columnLabel);
+			if (result.indexOf(".") > 0) {
+				int count = result.indexOf(".") + scale;
+				result = result.substring(0, count);
+			}
+			return new BigDecimal(result);
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -204,16 +248,34 @@ public class SPARQLSelectResultSet implements ResultSet {
 		return null;
 	}
 
+	
+	public Literal getNextSolutionAsLiteral(int columnIndex) {
+		return this.getNextSolutionAsLiteral(this.columnNames.get(columnIndex));
+	}
+	
+	public Literal getNextSolutionAsLiteral(String columnName) {
+		QuerySolution solution = this.internalResultSet.get(this.currentRow);
+		return solution.getLiteral(columnName);
+	}
+	
 	@Override
 	public boolean getBoolean(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			return this.getNextSolutionAsLiteral(columnIndex).getBoolean();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
 	public boolean getBoolean(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			return this.getNextSolutionAsLiteral(columnLabel).getBoolean();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -246,124 +308,148 @@ public class SPARQLSelectResultSet implements ResultSet {
 		return null;
 	}
 
-	@Override
+	
 	public Reader getCharacterStream(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
+	
 	public Clob getClob(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public Clob getClob(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public int getConcurrency() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.concurrency;
 	}
 
-	@Override
 	public String getCursorName() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public Date getDate(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			XSDDateTime val = (XSDDateTime)this.getNextSolutionAsLiteral(columnIndex).getValue();
+			return (Date)val.asCalendar().getTime();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
 	public Date getDate(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			XSDDateTime val = (XSDDateTime)this.getNextSolutionAsLiteral(columnLabel).getValue();
+			return (Date)val.asCalendar().getTime();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
 	public Date getDate(int columnIndex, Calendar cal) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public Date getDate(String columnLabel, Calendar cal) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public double getDouble(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnIndex).getDouble();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
 	public double getDouble(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnLabel).getDouble();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
 	public int getFetchDirection() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.fetchDirection;
 	}
 
-	@Override
 	public int getFetchSize() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return (int)this.sparql.getLimit();
+		}
+		catch (Exception e) {
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
 	public float getFloat(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnIndex).getFloat();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
+	
 	public float getFloat(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnLabel).getFloat();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
+	
 	public int getHoldability() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.statement.getResultSetHoldability();
 	}
 
-	@Override
+	
 	public int getInt(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnIndex).getInt();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
 	public int getInt(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnLabel).getInt();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
 	public long getLong(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnIndex).getLong();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
 	public long getLong(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnLabel).getLong();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -410,14 +496,24 @@ public class SPARQLSelectResultSet implements ResultSet {
 
 	@Override
 	public Object getObject(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			String column = this.columnNames.get(columnIndex);
+			return this.getObject(column);
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
 	public Object getObject(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			QuerySolution solution = this.internalResultSet.get(this.currentRow);
+			return solution.get(columnLabel);
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -496,14 +592,22 @@ public class SPARQLSelectResultSet implements ResultSet {
 
 	@Override
 	public String getString(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return this.getNextSolutionAsLiteral(columnIndex).getString();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
 	public String getString(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return this.getNextSolutionAsLiteral(columnLabel).getString();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	@Override
