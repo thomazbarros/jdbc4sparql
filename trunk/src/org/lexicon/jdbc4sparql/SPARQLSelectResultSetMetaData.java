@@ -4,6 +4,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import org.lexicon.jdbc4sparql.SPARQLSelectResultSet;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class SPARQLSelectResultSetMetaData implements ResultSetMetaData {
 
@@ -39,7 +40,7 @@ public class SPARQLSelectResultSetMetaData implements ResultSetMetaData {
 	}
 
 	public int getColumnType(int column) throws SQLException {
-		return java.sql.Types.OTHER;
+		return java.sql.Types.JAVA_OBJECT;		
 	}
 
 	public String getColumnTypeName(int column) throws SQLException {
