@@ -22,12 +22,16 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 import com.hp.hpl.jena.query.*;
 import java.util.List;
+
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.datatypes.xsd.*;
 
 public class SPARQLSelectResultSet implements ResultSet {
@@ -53,13 +57,17 @@ public class SPARQLSelectResultSet implements ResultSet {
 		this.fetchDirection = ResultSet.FETCH_FORWARD;
 		this.concurrency = ResultSet.CONCUR_READ_ONLY;
 		this.rsm = new SPARQLSelectResultSetMetaData(this);
-		this.type = ResultSet.TYPE_FORWARD_ONLY;
+		this.type = ResultSet.TYPE_SCROLL_INSENSITIVE;
 		this.internalResultSet = new Vector<QuerySolution>();
 		this.columnNames = new Vector<String>(this.resultSet.getResultVars());
 		while (this.resultSet.hasNext()) {
 			this.resultSet.next();
 			this.internalResultSet.add(this.resultSet.next());
 		}
+	}
+	
+	public void setRow(int row) {
+		this.currentRow = row;
 	}
 	
 	public Vector<String> getColumnNames() {
@@ -224,15 +232,11 @@ public class SPARQLSelectResultSet implements ResultSet {
 		}
 	}
 
-	@Override
 	public InputStream getBinaryStream(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public InputStream getBinaryStream(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -256,6 +260,15 @@ public class SPARQLSelectResultSet implements ResultSet {
 	public Literal getNextSolutionAsLiteral(String columnName) {
 		QuerySolution solution = this.internalResultSet.get(this.currentRow);
 		return solution.getLiteral(columnName);
+	}
+	
+	public Resource getNextSolutionAsResource(int columnIndex) {
+		return this.getNextSolutionAsResource(this.columnNames.get(columnIndex));
+	}
+	
+	public Resource getNextSolutionAsResource(String columnName) {
+		QuerySolution solution = this.internalResultSet.get(this.currentRow);
+		return solution.getResource(columnName);
 	}
 	
 	@Override
@@ -494,7 +507,6 @@ public class SPARQLSelectResultSet implements ResultSet {
 		return null;
 	}
 
-	@Override
 	public Object getObject(int columnIndex) throws SQLException {
 		try {
 			String column = this.columnNames.get(columnIndex);
@@ -505,7 +517,6 @@ public class SPARQLSelectResultSet implements ResultSet {
 		}
 	}
 
-	@Override
 	public Object getObject(String columnLabel) throws SQLException {
 		try {
 			QuerySolution solution = this.internalResultSet.get(this.currentRow);
@@ -516,81 +527,66 @@ public class SPARQLSelectResultSet implements ResultSet {
 		}
 	}
 
-	@Override
 	public Object getObject(int columnIndex, Map<String, Class<?>> map)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getObject(columnIndex);
 	}
 
-	@Override
 	public Object getObject(String columnLabel, Map<String, Class<?>> map)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getObject(columnLabel);
 	}
 
-	@Override
 	public Ref getRef(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public Ref getRef(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported"); 
 	}
 
-	@Override
 	public int getRow() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.currentRow;
 	}
 
-	@Override
 	public RowId getRowId(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported"); 
 	}
 
-	@Override
 	public RowId getRowId(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported"); 
 	}
 
-	@Override
 	public SQLXML getSQLXML(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public SQLXML getSQLXML(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public short getShort(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnIndex).getShort();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
 	public short getShort(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return this.getNextSolutionAsLiteral(columnLabel).getShort();
+		}
+		catch (Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
 	public Statement getStatement() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.statement;
 	}
 
-	@Override
 	public String getString(int columnIndex) throws SQLException {
 		try {
 			return this.getNextSolutionAsLiteral(columnIndex).getString();
@@ -600,7 +596,6 @@ public class SPARQLSelectResultSet implements ResultSet {
 		}
 	}
 
-	@Override
 	public String getString(String columnLabel) throws SQLException {
 		try {
 			return this.getNextSolutionAsLiteral(columnLabel).getString();
@@ -610,120 +605,109 @@ public class SPARQLSelectResultSet implements ResultSet {
 		}
 	}
 
-	@Override
 	public Time getTime(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Time(this.getDate(columnIndex).getTime());
 	}
 
-	@Override
 	public Time getTime(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Time(this.getDate(columnLabel).getTime());
 	}
-
-	@Override
+	
 	public Time getTime(int columnIndex, Calendar cal) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Time(this.getDate(columnIndex).getTime());
 	}
 
-	@Override
 	public Time getTime(String columnLabel, Calendar cal) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Time(this.getDate(columnLabel).getTime());
 	}
 
-	@Override
 	public Timestamp getTimestamp(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Timestamp(this.getDate(columnIndex).getTime());
 	}
 
-	@Override
 	public Timestamp getTimestamp(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Timestamp(this.getDate(columnLabel).getTime());
 	}
 
-	@Override
 	public Timestamp getTimestamp(int columnIndex, Calendar cal)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Timestamp(this.getDate(columnIndex).getTime());
 	}
 
-	@Override
 	public Timestamp getTimestamp(String columnLabel, Calendar cal)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Timestamp(this.getDate(columnLabel).getTime());
 	}
 
-	@Override
 	public int getType() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.type;
 	}
 
-	@Override
 	public URL getURL(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getURL(this.columnNames.get(columnIndex));
 	}
 
 	@Override
 	public URL getURL(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			RDFNode rdfn = (RDFNode)this.getObject(columnLabel);
+			if (rdfn.isResource()) {
+				Resource res = (Resource)rdfn;
+				return new java.net.URL(res.getURI());
+			}
+			else {
+				return new java.net.URL(rdfn.toString());
+			}
+		}
+		catch (Exception e) {
+			throw new SQLException(e.getMessage());
+		}
 	}
 
-	@Override
+	
 	public InputStream getUnicodeStream(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public InputStream getUnicodeStream(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public SQLWarning getWarnings() throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public void insertRow() throws SQLException {
-		// TODO Auto-generated method stub
+	public void insertRow() throws SQLException {}
 
-	}
-
-	@Override
 	public boolean isAfterLast() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.currentRow > this.internalResultSet.size()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
-	@Override
 	public boolean isBeforeFirst() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.currentRow == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
-	@Override
 	public boolean isClosed() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		return this.closed;
 	}
 
-	@Override
 	public boolean isFirst() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.currentRow == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override
