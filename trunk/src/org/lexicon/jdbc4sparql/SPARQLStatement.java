@@ -58,12 +58,12 @@ public class SPARQLStatement implements Statement {
 			}
 			if (query.isConstructType()){
 				QueryExecution queryExecution = QueryExecutionFactory.sparqlService(this.conn.getEndPoint(), query, this.conn.getDefaultGraphs(), this.conn.getNamedGraphs());
-				this.resultSet = new SPARQLConstructResultSet(queryExecution.execConstruct());
+				this.resultSet = new SPARQLConstructResultSet(queryExecution.execConstruct(), this, query);
 				return true;
 			}
 			if (query.isDescribeType()){
 				QueryExecution queryExecution = QueryExecutionFactory.sparqlService(this.conn.getEndPoint(), query, this.conn.getDefaultGraphs(), this.conn.getNamedGraphs());
-				this.resultSet = new SPARQLConstructResultSet(queryExecution.execDescribe());
+				this.resultSet = new SPARQLConstructResultSet(queryExecution.execDescribe(), this, query);
 				return true;
 			}
 			if (query.isAskType()){
