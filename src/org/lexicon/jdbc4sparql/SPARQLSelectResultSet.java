@@ -47,6 +47,7 @@ public class SPARQLSelectResultSet implements ResultSet {
 	private int concurrency;
 	private int fetchDirection;
 	private Query sparql;
+	private int fetchSize;
 	
 	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement, Query sqarql){
 		this.statement = statement;
@@ -79,8 +80,8 @@ public class SPARQLSelectResultSet implements ResultSet {
 	}
 	
 	public boolean absolute(int row) throws SQLException {
-		if (this.closed) {
-			throw new SQLException("Resultset closed");
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
 		else {
 			if (row > this.internalResultSet.size() || row <= -2) {
@@ -104,8 +105,8 @@ public class SPARQLSelectResultSet implements ResultSet {
 
 	
 	public void afterLast() throws SQLException {
-		if (this.closed) {
-			throw new SQLException("Resultset closed");
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
 		else {
 			this.currentRow = this.internalResultSet.size() + 1;
@@ -114,8 +115,8 @@ public class SPARQLSelectResultSet implements ResultSet {
 
 	
 	public void beforeFirst() throws SQLException {
-		if (this.closed) {
-			throw new SQLException("Resultset closed");
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
 		else {
 			this.currentRow = 0;
@@ -144,13 +145,18 @@ public class SPARQLSelectResultSet implements ResultSet {
 
 	
 	public int findColumn(String columnLabel) throws SQLException {
-		return this.columnNames.indexOf(columnLabel);
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.columnNames.indexOf(columnLabel);
+		}
 	}
 
 	
 	public boolean first() throws SQLException {
-		if (this.closed) {
-			throw new SQLException("Resultset closed");
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
 		else {
 			if (this.internalResultSet.size() > 0) {
@@ -164,92 +170,146 @@ public class SPARQLSelectResultSet implements ResultSet {
 	}
 
 	public Array getArray(int columnIndex) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
-
 	
 	public Array getArray(String columnLabel) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 
 	public InputStream getAsciiStream(int columnIndex) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	public InputStream getAsciiStream(String columnLabel) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
-		try {
-			return new BigDecimal(this.getString(columnIndex));
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return new BigDecimal(this.getString(columnIndex));
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
-		
 	}
 
 	public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
-		try {
-			return new BigDecimal(this.getString(columnLabel));
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return new BigDecimal(this.getString(columnLabel));
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
-	@Override
 	public BigDecimal getBigDecimal(int columnIndex, int scale)
 			throws SQLException {
-		try {
-			String result = this.getString(columnIndex);
-			if (result.indexOf(".") > 0) {
-				int count = result.indexOf(".") + scale;
-				result = result.substring(0, count);
-			}
-			return new BigDecimal(result);
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				String result = this.getString(columnIndex);
+				if (result.indexOf(".") > 0) {
+					int count = result.indexOf(".") + scale;
+					result = result.substring(0, count);
+				}
+				return new BigDecimal(result);
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
-	@Override
 	public BigDecimal getBigDecimal(String columnLabel, int scale)
 			throws SQLException {
-		try {
-			String result = this.getString(columnLabel);
-			if (result.indexOf(".") > 0) {
-				int count = result.indexOf(".") + scale;
-				result = result.substring(0, count);
-			}
-			return new BigDecimal(result);
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				String result = this.getString(columnLabel);
+				if (result.indexOf(".") > 0) {
+					int count = result.indexOf(".") + scale;
+					result = result.substring(0, count);
+				}
+				return new BigDecimal(result);
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public InputStream getBinaryStream(int columnIndex) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	public InputStream getBinaryStream(String columnLabel) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
+	
 	public Blob getBlob(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
+	
 	public Blob getBlob(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	
@@ -271,72 +331,116 @@ public class SPARQLSelectResultSet implements ResultSet {
 		return solution.getResource(columnName);
 	}
 	
-	@Override
+	
 	public boolean getBoolean(int columnIndex) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnIndex).getBoolean();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnIndex).getBoolean();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
-	@Override
 	public boolean getBoolean(String columnLabel) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnLabel).getBoolean();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnLabel).getBoolean();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
-	@Override
 	public byte getByte(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	@Override
 	public byte getByte(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	@Override
 	public byte[] getBytes(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
 	public byte[] getBytes(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
 	public Reader getCharacterStream(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	
 	public Reader getCharacterStream(String columnLabel) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	
 	public Clob getClob(int columnIndex) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	public Clob getClob(String columnLabel) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	public int getConcurrency() throws SQLException {
-		return this.concurrency;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.concurrency;
+		}
 	}
 
 	public String getCursorName() throws SQLException {
@@ -344,81 +448,130 @@ public class SPARQLSelectResultSet implements ResultSet {
 	}
 
 	public Date getDate(int columnIndex) throws SQLException {
-		try {
-			XSDDateTime val = (XSDDateTime)this.getNextSolutionAsLiteral(columnIndex).getValue();
-			return (Date)val.asCalendar().getTime();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				XSDDateTime val = (XSDDateTime)this.getNextSolutionAsLiteral(columnIndex).getValue();
+				return (Date)val.asCalendar().getTime();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
-	@Override
 	public Date getDate(String columnLabel) throws SQLException {
-		try {
-			XSDDateTime val = (XSDDateTime)this.getNextSolutionAsLiteral(columnLabel).getValue();
-			return (Date)val.asCalendar().getTime();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				XSDDateTime val = (XSDDateTime)this.getNextSolutionAsLiteral(columnLabel).getValue();
+				return (Date)val.asCalendar().getTime();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public Date getDate(int columnIndex, Calendar cal) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.getDate(columnIndex);
+		}
 	}
 
 	public Date getDate(String columnLabel, Calendar cal) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.getDate(columnLabel);
+		}
 	}
 
 	public double getDouble(int columnIndex) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnIndex).getDouble();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnIndex).getDouble();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public double getDouble(String columnLabel) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnLabel).getDouble();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnLabel).getDouble();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public int getFetchDirection() throws SQLException {
-		return this.fetchDirection;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.fetchDirection;
+		}
 	}
 
 	public int getFetchSize() throws SQLException {
-		try {
-			return (int)this.sparql.getLimit();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e) {
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return (int)this.sparql.getLimit();
+			}
+			catch (Exception e) {
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public float getFloat(int columnIndex) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnIndex).getFloat();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnIndex).getFloat();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	
 	public float getFloat(String columnLabel) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnLabel).getFloat();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnLabel).getFloat();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
@@ -429,112 +582,167 @@ public class SPARQLSelectResultSet implements ResultSet {
 
 	
 	public int getInt(int columnIndex) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnIndex).getInt();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnIndex).getInt();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public int getInt(String columnLabel) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnLabel).getInt();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnLabel).getInt();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public long getLong(int columnIndex) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnIndex).getLong();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnIndex).getLong();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
-	@Override
 	public long getLong(String columnLabel) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnLabel).getLong();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnLabel).getLong();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
-	@Override
 	public ResultSetMetaData getMetaData() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.rsm;
 	}
 
-	@Override
 	public Reader getNCharacterStream(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
 	public Reader getNCharacterStream(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
 	public NClob getNClob(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
 	public NClob getNClob(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
 	public String getNString(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	@Override
 	public String getNString(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	public Object getObject(int columnIndex) throws SQLException {
-		try {
-			String column = this.columnNames.get(columnIndex);
-			return this.getObject(column);
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				String column = this.columnNames.get(columnIndex);
+				return this.getObject(column);
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public Object getObject(String columnLabel) throws SQLException {
-		try {
-			QuerySolution solution = this.internalResultSet.get(this.currentRow);
-			return solution.get(columnLabel);
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				QuerySolution solution = this.internalResultSet.get(this.currentRow);
+				return solution.get(columnLabel);
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public Object getObject(int columnIndex, Map<String, Class<?>> map)
 			throws SQLException {
-		return this.getObject(columnIndex);
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.getObject(columnIndex);
+		}
 	}
 
 	public Object getObject(String columnLabel, Map<String, Class<?>> map)
 			throws SQLException {
-		return this.getObject(columnLabel);
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.getObject(columnLabel);
+		}
 	}
 
 	public Ref getRef(int columnIndex) throws SQLException {
@@ -566,20 +774,30 @@ public class SPARQLSelectResultSet implements ResultSet {
 	}
 
 	public short getShort(int columnIndex) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnIndex).getShort();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnIndex).getShort();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public short getShort(String columnLabel) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnLabel).getShort();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getNextSolutionAsLiteral(columnLabel).getShort();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
@@ -588,55 +806,105 @@ public class SPARQLSelectResultSet implements ResultSet {
 	}
 
 	public String getString(int columnIndex) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnIndex).getString();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getString(this.columnNames.get(columnIndex));
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public String getString(String columnLabel) throws SQLException {
-		try {
-			return this.getNextSolutionAsLiteral(columnLabel).getString();
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e){
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				return this.getObject(columnLabel).toString();
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	public Time getTime(int columnIndex) throws SQLException {
-		return new Time(this.getDate(columnIndex).getTime());
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Time(this.getDate(columnIndex).getTime());
+		}
 	}
 
 	public Time getTime(String columnLabel) throws SQLException {
-		return new Time(this.getDate(columnLabel).getTime());
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Time(this.getDate(columnLabel).getTime());
+		}
 	}
 	
 	public Time getTime(int columnIndex, Calendar cal) throws SQLException {
-		return new Time(this.getDate(columnIndex).getTime());
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Time(this.getDate(columnIndex).getTime());
+		}
 	}
 
 	public Time getTime(String columnLabel, Calendar cal) throws SQLException {
-		return new Time(this.getDate(columnLabel).getTime());
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Time(this.getDate(columnLabel).getTime());
+		}
 	}
 
 	public Timestamp getTimestamp(int columnIndex) throws SQLException {
-		return new Timestamp(this.getDate(columnIndex).getTime());
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Timestamp(this.getDate(columnIndex).getTime());
+		}
 	}
 
 	public Timestamp getTimestamp(String columnLabel) throws SQLException {
-		return new Timestamp(this.getDate(columnLabel).getTime());
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Timestamp(this.getDate(columnLabel).getTime());
+		}
 	}
 
 	public Timestamp getTimestamp(int columnIndex, Calendar cal)
 			throws SQLException {
-		return new Timestamp(this.getDate(columnIndex).getTime());
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Timestamp(this.getDate(columnIndex).getTime());
+		}
 	}
 
 	public Timestamp getTimestamp(String columnLabel, Calendar cal)
 			throws SQLException {
-		return new Timestamp(this.getDate(columnLabel).getTime());
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Timestamp(this.getDate(columnLabel).getTime());
+		}
 	}
 
 	public int getType() throws SQLException {
@@ -644,56 +912,87 @@ public class SPARQLSelectResultSet implements ResultSet {
 	}
 
 	public URL getURL(int columnIndex) throws SQLException {
-		return this.getURL(this.columnNames.get(columnIndex));
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.getURL(this.columnNames.get(columnIndex));
+		}
 	}
 
-	@Override
 	public URL getURL(String columnLabel) throws SQLException {
-		try {
-			RDFNode rdfn = (RDFNode)this.getObject(columnLabel);
-			if (rdfn.isResource()) {
-				Resource res = (Resource)rdfn;
-				return new java.net.URL(res.getURI());
-			}
-			else {
-				return new java.net.URL(rdfn.toString());
-			}
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
-		catch (Exception e) {
-			throw new SQLException(e.getMessage());
+		else {
+			try {
+				RDFNode rdfn = (RDFNode)this.getObject(columnLabel);
+				if (rdfn.isResource()) {
+					Resource res = (Resource)rdfn;
+					return new java.net.URL(res.getURI());
+				}
+				else {
+					return new java.net.URL(rdfn.toString());
+				}
+			}
+			catch (Exception e) {
+				throw new SQLException(e.getMessage());
+			}
 		}
 	}
 
 	
 	public InputStream getUnicodeStream(int columnIndex) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	public InputStream getUnicodeStream(String columnLabel) throws SQLException {
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	public SQLWarning getWarnings() throws SQLException {
 		return null;
 	}
 
-	public void insertRow() throws SQLException {}
+	public void insertRow() throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
 
 	public boolean isAfterLast() throws SQLException {
-		if (this.currentRow > this.internalResultSet.size()) {
-			return true;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
 		else {
-			return false;
+			if (this.currentRow > this.internalResultSet.size()) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 
 	public boolean isBeforeFirst() throws SQLException {
-		if (this.currentRow == 0) {
-			return true;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
 		else {
-			return false;
+			if (this.currentRow == 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 
@@ -702,648 +1001,563 @@ public class SPARQLSelectResultSet implements ResultSet {
 	}
 
 	public boolean isFirst() throws SQLException {
-		if (this.currentRow == 0) {
-			return true;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
 		}
 		else {
-			return false;
+			if (this.currentRow == 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 
-	@Override
 	public boolean isLast() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			if (this.currentRow == this.internalResultSet.size()) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
-	@Override
 	public boolean last() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			this.currentRow = this.internalResultSet.size();
+			return true;
+		}
 	}
 
-	@Override
 	public void moveToCurrentRow() throws SQLException {
-		// TODO Auto-generated method stub
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 
 	}
 
-	@Override
 	public void moveToInsertRow() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public boolean next() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			this.currentRow++;
+			return true;
+		}
 	}
 
-	@Override
 	public boolean previous() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			this.currentRow--;
+			return true;
+		}
 	}
 
-	@Override
+	
 	public void refreshRow() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public boolean relative(int rows) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public boolean rowDeleted() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public boolean rowInserted() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public boolean rowUpdated() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void setFetchDirection(int direction) throws SQLException {
-		// TODO Auto-generated method stub
-
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			this.fetchDirection = direction;
+		}
 	}
 
-	@Override
 	public void setFetchSize(int rows) throws SQLException {
-		// TODO Auto-generated method stub
-
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			this.fetchSize = rows;
+		}
 	}
 
-	@Override
 	public void updateArray(int columnIndex, Array x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateArray(String columnLabel, Array x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateAsciiStream(int columnIndex, InputStream x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateAsciiStream(String columnLabel, InputStream x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateAsciiStream(int columnIndex, InputStream x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateAsciiStream(String columnLabel, InputStream x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateAsciiStream(int columnIndex, InputStream x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateAsciiStream(String columnLabel, InputStream x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateBigDecimal(int columnIndex, BigDecimal x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateBigDecimal(String columnLabel, BigDecimal x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateBinaryStream(int columnIndex, InputStream x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateBinaryStream(String columnLabel, InputStream x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateBinaryStream(int columnIndex, InputStream x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateBinaryStream(String columnLabel, InputStream x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public void updateBinaryStream(int columnIndex, InputStream x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBinaryStream(String columnLabel, InputStream x,
 			long length) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBlob(int columnIndex, Blob x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBlob(String columnLabel, Blob x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBlob(int columnIndex, InputStream inputStream)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBlob(String columnLabel, InputStream inputStream)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBlob(int columnIndex, InputStream inputStream, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBlob(String columnLabel, InputStream inputStream,
 			long length) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBoolean(int columnIndex, boolean x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBoolean(String columnLabel, boolean x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateByte(int columnIndex, byte x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateByte(String columnLabel, byte x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBytes(int columnIndex, byte[] x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateBytes(String columnLabel, byte[] x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateCharacterStream(int columnIndex, Reader x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateCharacterStream(String columnLabel, Reader reader)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateCharacterStream(int columnIndex, Reader x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateCharacterStream(String columnLabel, Reader reader,
 			int length) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateCharacterStream(int columnIndex, Reader x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateCharacterStream(String columnLabel, Reader reader,
 			long length) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateClob(int columnIndex, Clob x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateClob(String columnLabel, Clob x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateClob(int columnIndex, Reader reader) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateClob(String columnLabel, Reader reader)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateClob(int columnIndex, Reader reader, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateClob(String columnLabel, Reader reader, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateDate(int columnIndex, Date x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateDate(String columnLabel, Date x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateDouble(int columnIndex, double x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateDouble(String columnLabel, double x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateFloat(int columnIndex, float x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateFloat(String columnLabel, float x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateInt(int columnIndex, int x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateInt(String columnLabel, int x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateLong(int columnIndex, long x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateLong(String columnLabel, long x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNCharacterStream(int columnIndex, Reader x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNCharacterStream(String columnLabel, Reader reader)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNCharacterStream(int columnIndex, Reader x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNCharacterStream(String columnLabel, Reader reader,
 			long length) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNClob(int columnIndex, NClob clob) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNClob(String columnLabel, NClob clob) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNClob(int columnIndex, Reader reader) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNClob(String columnLabel, Reader reader)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNClob(int columnIndex, Reader reader, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNClob(String columnLabel, Reader reader, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNString(int columnIndex, String string)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNString(String columnLabel, String string)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNull(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateNull(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateObject(int columnIndex, Object x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateObject(String columnLabel, Object x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateObject(int columnIndex, Object x, int scaleOrLength)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateObject(String columnLabel, Object x, int scaleOrLength)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateRef(int columnIndex, Ref x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateRef(String columnLabel, Ref x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateRow() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateRowId(int columnIndex, RowId x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateRowId(String columnLabel, RowId x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateSQLXML(int columnIndex, SQLXML xmlObject)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateSQLXML(String columnLabel, SQLXML xmlObject)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateShort(int columnIndex, short x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateShort(String columnLabel, short x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateString(int columnIndex, String x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateString(String columnLabel, String x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateTime(int columnIndex, Time x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateTime(String columnLabel, Time x) throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateTimestamp(int columnIndex, Timestamp x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
+	
 	public void updateTimestamp(String columnLabel, Timestamp x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	@Override
 	public boolean wasNull() throws SQLException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
