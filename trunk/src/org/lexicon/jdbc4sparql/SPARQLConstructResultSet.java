@@ -51,7 +51,7 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 	private int type;
 	private Vector<String> columnNames;
 	private boolean closed;
-	private SPARQLSelectResultSetMetaData rsm;
+	private SPARQLConstructResultSetMetaData rsm;
 	private int concurrency;
 	private int fetchDirection;
 	private int fetchSize;
@@ -61,6 +61,7 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 		this.statement = statement;
 		this.sparql = sparql;
 		this.currentRow = 0;
+		this.rsm = new SPARQLConstructResultSetMetaData(this);
 		this.closed = false;
 		this.fetchDirection = ResultSet.FETCH_FORWARD;
 		this.concurrency = ResultSet.CONCUR_READ_ONLY;
@@ -72,6 +73,22 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 		this.columnNames.add("s");
 		this.columnNames.add("p");
 		this.columnNames.add("o");
+	}
+	
+	public Model getModel() {
+		return this.model;
+	}
+	
+	public void setRow(int row) {
+		this.currentRow = row;
+	}
+	
+	public Vector<String> getColumnNames() {
+		return this.columnNames;
+	}
+	
+	public Vector<com.hp.hpl.jena.rdf.model.Statement> getInternalResultSet () {
+		return this.internalResultSet;
 	}
 	
 	public boolean absolute(int row) throws SQLException {
@@ -1737,1034 +1754,864 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createStatement(Resource arg0,
 			Property arg1, RDFNode arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Literal createTypedLiteral(Object arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(String arg0, RDFDatatype arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0, arg1);
 	}
 
 	@Override
 	public Literal createTypedLiteral(Object arg0, RDFDatatype arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0, arg1);
 	}
 
 	@Override
 	public Model difference(Model arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.difference(arg0);
 	}
 
 	@Override
 	public Object executeInTransaction(Command arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.executeInTransaction(arg0);
 	}
 
 	@Override
 	public Resource getAnyReifiedStatement(
 			com.hp.hpl.jena.rdf.model.Statement arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getAnyReifiedStatement(arg0);
 	}
 
 	@Override
 	public Lock getLock() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getLock();
 	}
 
 	@Override
 	public Property getProperty(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getProperty(arg0, arg1);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement getProperty(Resource arg0,
 			Property arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getProperty(arg0, arg1);
 	}
 
 	@Override
 	public ReificationStyle getReificationStyle() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getReificationStyle();
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement getRequiredProperty(
 			Resource arg0, Property arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getRequiredProperty(arg0, arg1);
 	}
 
 	@Override
 	public Resource getResource(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getResource(arg0);
 	}
 
 	@Override
 	public boolean independent() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.independent();
 	}
 
 	@Override
 	public Model intersection(Model arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.intersection(arg0);
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.isEmpty();
 	}
 
 	@Override
 	public boolean isIsomorphicWith(Model arg0) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.isIsomorphicWith(arg0);
 	}
 
 	@Override
 	public boolean isReified(com.hp.hpl.jena.rdf.model.Statement arg0) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.isReified(arg0);
 	}
 
 	@Override
 	public NsIterator listNameSpaces() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listNameSpaces();
 	}
 
 	@Override
 	public NodeIterator listObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listObjects();
 	}
 
 	@Override
 	public NodeIterator listObjectsOfProperty(Property arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listObjectsOfProperty(arg0);
 	}
 
 	@Override
 	public NodeIterator listObjectsOfProperty(Resource arg0, Property arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listObjectsOfProperty(arg0, arg1);
 	}
 
 	@Override
 	public RSIterator listReifiedStatements() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listReifiedStatements();
 	}
 
 	@Override
 	public RSIterator listReifiedStatements(
 			com.hp.hpl.jena.rdf.model.Statement arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listReifiedStatements(arg0);
 	}
 
 	@Override
 	public ResIterator listResourcesWithProperty(Property arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listResourcesWithProperty(arg0);
 	}
 
 	@Override
 	public ResIterator listResourcesWithProperty(Property arg0, RDFNode arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listResourcesWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public StmtIterator listStatements() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listStatements();
 	}
 
 	@Override
 	public StmtIterator listStatements(Selector arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listStatements(arg0);
 	}
 
 	@Override
 	public StmtIterator listStatements(Resource arg0, Property arg1,
 			RDFNode arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listStatements(arg0, arg1, arg2);
 	}
 
 	@Override
 	public ResIterator listSubjects() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listSubjects();
 	}
 
 	@Override
 	public ResIterator listSubjectsWithProperty(Property arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listSubjectsWithProperty(arg0);
 	}
 
 	@Override
 	public ResIterator listSubjectsWithProperty(Property arg0, RDFNode arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listSubjectsWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public Model notifyEvent(Object arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.notifyEvent(arg0);
 	}
 
 	@Override
 	public Model query(Selector arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.query(arg0);
 	}
 
 	@Override
 	public Model read(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.read(arg0);
 	}
 
 	@Override
 	public Model read(InputStream arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.read(arg0, arg1);
 	}
 
 	@Override
 	public Model read(Reader arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.read(arg0, arg1);
 	}
 
 	@Override
 	public Model read(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.read(arg0, arg1);
 	}
 
 	@Override
 	public Model read(InputStream arg0, String arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.read(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model read(Reader arg0, String arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.read(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model read(String arg0, String arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.read(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model register(ModelChangedListener arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.register(arg0);
 	}
 
 	@Override
 	public Model remove(com.hp.hpl.jena.rdf.model.Statement[] arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.remove(arg0);
 	}
 
 	@Override
 	public Model remove(List<com.hp.hpl.jena.rdf.model.Statement> arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.remove(arg0);
 	}
 
-	@Override
 	public Model remove(com.hp.hpl.jena.rdf.model.Statement arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.remove(arg0);
 	}
 
-	@Override
 	public Model removeAll() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.removeAll();
 	}
 
 	@Override
 	public Model removeAll(Resource arg0, Property arg1, RDFNode arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.removeAll(arg0, arg1, arg2);
 	}
 
 	@Override
 	public void removeAllReifications(com.hp.hpl.jena.rdf.model.Statement arg0) {
-		// TODO Auto-generated method stub
-
+		this.model.removeAllReifications(arg0);
 	}
 
 	@Override
 	public void removeReification(ReifiedStatement arg0) {
-		// TODO Auto-generated method stub
-
+		this.model.removeReification(arg0);
 	}
 
 	@Override
 	public long size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.model.size();
 	}
 
 	@Override
 	public boolean supportsSetOperations() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.supportsSetOperations();
 	}
 
 	@Override
 	public boolean supportsTransactions() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.supportsTransactions();
 	}
 
 	@Override
 	public Model union(Model arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.union(arg0);
 	}
 
 	@Override
 	public Model unregister(ModelChangedListener arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.unregister(arg0);
 	}
 
 	@Override
 	public Model write(Writer arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.write(arg0);
 	}
 
 	@Override
 	public Model write(OutputStream arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.write(arg0);
 	}
 
 	@Override
 	public Model write(Writer arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.write(arg0, arg1);
 	}
 
 	@Override
 	public Model write(OutputStream arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.write(arg0, arg1);
 	}
 
 	@Override
 	public Model write(Writer arg0, String arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.write(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model write(OutputStream arg0, String arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.write(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model add(Resource arg0, Property arg1, RDFNode arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.add(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model add(Resource arg0, Property arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.add(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model add(Resource arg0, Property arg1, String arg2, RDFDatatype arg3) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.add(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
 	public Model add(Resource arg0, Property arg1, String arg2, boolean arg3) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.add(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
 	public Model add(Resource arg0, Property arg1, String arg2, String arg3) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.add(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
 	public Model addLiteral(Resource arg0, Property arg1, boolean arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.addLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model addLiteral(Resource arg0, Property arg1, long arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.addLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model addLiteral(Resource arg0, Property arg1, int arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.addLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model addLiteral(Resource arg0, Property arg1, char arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.addLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model addLiteral(Resource arg0, Property arg1, float arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.addLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model addLiteral(Resource arg0, Property arg1, double arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.addLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model addLiteral(Resource arg0, Property arg1, Object arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.addLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model addLiteral(Resource arg0, Property arg1, Literal arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.addLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean contains(Resource arg0, Property arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.contains(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean contains(Resource arg0, Property arg1, String arg2,
 			String arg3) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.contains(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
 	public boolean containsLiteral(Resource arg0, Property arg1, boolean arg2) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.containsLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean containsLiteral(Resource arg0, Property arg1, long arg2) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.containsLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean containsLiteral(Resource arg0, Property arg1, int arg2) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.containsLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean containsLiteral(Resource arg0, Property arg1, char arg2) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.containsLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean containsLiteral(Resource arg0, Property arg1, float arg2) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.containsLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean containsLiteral(Resource arg0, Property arg1, double arg2) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.containsLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean containsLiteral(Resource arg0, Property arg1, Object arg2) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.containsLiteral(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Alt createAlt() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createAlt();
 	}
 
 	@Override
 	public Alt createAlt(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createAlt(arg0);
 	}
 
 	@Override
 	public Bag createBag() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createBag();
 	}
 
 	@Override
 	public Bag createBag(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createBag(arg0);
 	}
 
 	@Override
 	public Literal createLiteral(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createLiteral(arg0);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createLiteralStatement(
 			Resource arg0, Property arg1, boolean arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createLiteralStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createLiteralStatement(
 			Resource arg0, Property arg1, float arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createLiteralStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createLiteralStatement(
 			Resource arg0, Property arg1, double arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createLiteralStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createLiteralStatement(
 			Resource arg0, Property arg1, long arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createLiteralStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createLiteralStatement(
 			Resource arg0, Property arg1, int arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createLiteralStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createLiteralStatement(
 			Resource arg0, Property arg1, char arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createLiteralStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createLiteralStatement(
 			Resource arg0, Property arg1, Object arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createLiteralStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Property createProperty(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createProperty(arg0);
 	}
 
 	@Override
 	public Resource createResource(Resource arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createResource(arg0);
 	}
 
 	@Override
 	public Resource createResource(ResourceF arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createResource(arg0);
 	}
 
 	@Override
 	public Resource createResource(String arg0, Resource arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createResource(arg0, arg1);
 	}
 
 	@Override
 	public Resource createResource(String arg0, ResourceF arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createResource(arg0, arg1);
 	}
 
 	@Override
 	public Seq createSeq() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createSeq();
 	}
 
 	@Override
 	public Seq createSeq(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createSeq(arg0);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createStatement(Resource arg0,
 			Property arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createStatement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createStatement(Resource arg0,
 			Property arg1, String arg2, String arg3) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createStatement(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createStatement(Resource arg0,
 			Property arg1, String arg2, boolean arg3) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createStatement(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement createStatement(Resource arg0,
 			Property arg1, String arg2, String arg3, boolean arg4) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createStatement(arg0, arg1, arg2, arg3, arg4);
 	}
 
 	@Override
 	public Literal createTypedLiteral(boolean arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(int arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(long arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(Calendar arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(char arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(float arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(double arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0);
 	}
 
 	@Override
 	public Literal createTypedLiteral(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0, arg1);
 	}
 
 	@Override
 	public Literal createTypedLiteral(Object arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.createTypedLiteral(arg0, arg1);
 	}
 
 	@Override
 	public Alt getAlt(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getAlt(arg0);
 	}
 
 	@Override
 	public Alt getAlt(Resource arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getAlt(arg0);
 	}
 
 	@Override
 	public Bag getBag(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getBag(arg0);
 	}
 
 	@Override
 	public Bag getBag(Resource arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getBag(arg0);
 	}
 
 	@Override
 	public Property getProperty(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getProperty(arg0);
 	}
 
 	@Override
 	public RDFNode getRDFNode(Node arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getRDFNode(arg0);
 	}
 
 	@Override
 	public Resource getResource(String arg0, ResourceF arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getResource(arg0, arg1);
 	}
 
 	@Override
 	public Seq getSeq(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getSeq(arg0);
 	}
 
 	@Override
 	public Seq getSeq(Resource arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getSeq(arg0);
 	}
 
 	@Override
 	public StmtIterator listLiteralStatements(Resource arg0, Property arg1,
 			boolean arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listLiteralStatements(arg0, arg1, arg2);
 	}
 
 	@Override
 	public StmtIterator listLiteralStatements(Resource arg0, Property arg1,
 			char arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listLiteralStatements(arg0, arg1, arg2);
 	}
 
 	@Override
 	public StmtIterator listLiteralStatements(Resource arg0, Property arg1,
 			long arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listLiteralStatements(arg0, arg1, arg2);
 	}
 
 	@Override
 	public StmtIterator listLiteralStatements(Resource arg0, Property arg1,
 			float arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listLiteralStatements(arg0, arg1, arg2);
 	}
 
 	@Override
 	public StmtIterator listLiteralStatements(Resource arg0, Property arg1,
 			double arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listLiteralStatements(arg0, arg1, arg2);
 	}
 
 	@Override
 	public ResIterator listResourcesWithProperty(Property arg0, boolean arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listResourcesWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public ResIterator listResourcesWithProperty(Property arg0, long arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listResourcesWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public ResIterator listResourcesWithProperty(Property arg0, char arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listResourcesWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public ResIterator listResourcesWithProperty(Property arg0, float arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listResourcesWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public ResIterator listResourcesWithProperty(Property arg0, double arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listResourcesWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public ResIterator listResourcesWithProperty(Property arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listResourcesWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public StmtIterator listStatements(Resource arg0, Property arg1, String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listStatements(arg0, arg1, arg2);
 	}
 
 	@Override
 	public StmtIterator listStatements(Resource arg0, Property arg1,
 			String arg2, String arg3) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listStatements(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
 	public ResIterator listSubjectsWithProperty(Property arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listSubjectsWithProperty(arg0, arg1);
 	}
 
 	@Override
 	public ResIterator listSubjectsWithProperty(Property arg0, String arg1,
 			String arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.listSubjectsWithProperty(arg0, arg1, arg2);
 	}
 
 	@Override
 	public Model remove(StmtIterator arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.remove(arg0);
 	}
 
 	@Override
 	public Model remove(Model arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.remove(arg0);
 	}
 
 	@Override
 	public Model remove(Model arg0, boolean arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.remove(arg0, arg1);
 	}
 
 	@Override
 	public Model remove(Resource arg0, Property arg1, RDFNode arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.remove(arg0, arg1, arg2);
 	}
 
 	@Override
 	public RDFNode asRDFNode(Node arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.asRDFNode(arg0);
 	}
 
 	@Override
 	public com.hp.hpl.jena.rdf.model.Statement asStatement(Triple arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.asStatement(arg0);
 	}
 
 	@Override
 	public Graph getGraph() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getGraph();
 	}
 
 	@Override
 	public QueryHandler queryHandler() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.queryHandler();
 	}
 
 	@Override
 	public RDFReader getReader() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getReader();
 	}
 
 	@Override
 	public RDFReader getReader(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getReader(arg0);
 	}
 
 	@Override
 	public String setReaderClassName(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.setReaderClassName(arg0, arg1);
 	}
 
 	@Override
 	public RDFWriter getWriter() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getWriter();
 	}
 
 	@Override
 	public RDFWriter getWriter(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getWriter(arg0);
 	}
 
 	@Override
 	public String setWriterClassName(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.setWriterClassName(arg0, arg1);
 	}
 
 	@Override
 	public String expandPrefix(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.expandPrefix(arg0);
 	}
 
 	@Override
 	public Map<String, String> getNsPrefixMap() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getNsPrefixMap();
 	}
 
 	@Override
 	public String getNsPrefixURI(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getNsPrefixURI(arg0);
 	}
 
 	@Override
 	public String getNsURIPrefix(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.getNsPrefixURI(arg0);
 	}
 
 	@Override
 	public PrefixMapping lock() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.lock();
 	}
 
 	@Override
 	public String qnameFor(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.qnameFor(arg0);
 	}
 
 	@Override
 	public PrefixMapping removeNsPrefix(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.removeNsPrefix(arg0);
 	}
 
 	@Override
 	public boolean samePrefixMappingAs(PrefixMapping arg0) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.model.samePrefixMappingAs(arg0);
 	}
 
 	@Override
 	public PrefixMapping setNsPrefix(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.setNsPrefix(arg0, arg1);
 	}
 
 	@Override
 	public PrefixMapping setNsPrefixes(PrefixMapping arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.setNsPrefixes(arg0);
 	}
 
 	@Override
 	public PrefixMapping setNsPrefixes(Map<String, String> arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.setNsPrefixes(arg0);
 	}
 
 	@Override
 	public String shortForm(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.shortForm(arg0);
 	}
 
 	@Override
 	public PrefixMapping withDefaultMappings(PrefixMapping arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.model.withDefaultMappings(arg0);
 	}
 
 	@Override
 	public void enterCriticalSection(boolean arg0) {
-		// TODO Auto-generated method stub
-
+		this.model.enterCriticalSection(arg0);
 	}
 
 	@Override
 	public void leaveCriticalSection() {
-		// TODO Auto-generated method stub
-
+		this.model.leaveCriticalSection();
 	}
 
 }
