@@ -60,21 +60,25 @@ public class SPARQLConnection implements Connection {
         this.readOnly = false;
         this.closed = false;
         this.typeMap = (Map)new HashMap();
-        this.endPoint = this.connectionURL.split("?")[0];
-        String[] parameters = this.connectionURL.split("?")[1].split("&");
-        for (int x = 0; x < parameters.length; x++) {
-        	if (parameters[x].split("=")[0] == "default-graph-uri") {
-        		this.defaultGraphs.add(parameters[x].split("=")[1]);
-        	}
-        	if (parameters[x].split("=")[0] == "named-graph-uri") {
-        		this.namedGraphs.add(parameters[x].split("=")[1]);
-        	}
-        	if (parameters[x].split("=")[0] == "username") {
-        		this.username = parameters[x].split("=")[1];
-        	}
-        	if (parameters[x].split("=")[0] == "password") {
-        		this.password = parameters[x].split("=")[1];
-        	}
+        
+        String[] tmp = this.connectionURL.split("\\?");
+        this.endPoint = tmp[0];
+        if (tmp.length > 1) {
+	        String[] parameters = this.connectionURL.split("\\?")[1].split("&");
+	        for (int x = 0; x < parameters.length; x++) {
+	        	if (parameters[x].split("=")[0] == "default-graph-uri") {
+	        		this.defaultGraphs.add(parameters[x].split("=")[1]);
+	        	}
+	        	if (parameters[x].split("=")[0] == "named-graph-uri") {
+	        		this.namedGraphs.add(parameters[x].split("=")[1]);
+	        	}
+	        	if (parameters[x].split("=")[0] == "username") {
+	        		this.username = parameters[x].split("=")[1];
+	        	}
+	        	if (parameters[x].split("=")[0] == "password") {
+	        		this.password = parameters[x].split("=")[1];
+	        	}
+	        }
         }
 	}
 	
