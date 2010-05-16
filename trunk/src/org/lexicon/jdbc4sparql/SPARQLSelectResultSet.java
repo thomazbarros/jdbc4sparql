@@ -50,6 +50,7 @@ public class SPARQLSelectResultSet implements ResultSet {
 	private int fetchSize;
 	
 	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement, Query sqarql){
+		System.out.println("prob2");
 		this.statement = statement;
 		this.resultSet = resultSet;
 		this.currentRow = 0;
@@ -58,11 +59,10 @@ public class SPARQLSelectResultSet implements ResultSet {
 		this.fetchDirection = ResultSet.FETCH_FORWARD;
 		this.concurrency = ResultSet.CONCUR_READ_ONLY;
 		this.rsm = new SPARQLSelectResultSetMetaData(this);
-		this.type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+		this.type = ResultSet.TYPE_FORWARD_ONLY;
 		this.internalResultSet = new Vector<QuerySolution>();
 		this.columnNames = new Vector<String>(this.resultSet.getResultVars());
 		while (this.resultSet.hasNext()) {
-			this.resultSet.next();
 			this.internalResultSet.add(this.resultSet.next());
 		}
 	}
@@ -701,7 +701,8 @@ public class SPARQLSelectResultSet implements ResultSet {
 		}
 		else {
 			try {
-				String column = this.columnNames.get(columnIndex);
+				String column = this.columnNames.get(columnIndex-1);
+				System.out.println(column);
 				return this.getObject(column);
 			}
 			catch (Exception e){
@@ -716,7 +717,7 @@ public class SPARQLSelectResultSet implements ResultSet {
 		}
 		else {
 			try {
-				QuerySolution solution = this.internalResultSet.get(this.currentRow);
+				QuerySolution solution = this.internalResultSet.get(this.currentRow-1);
 				return solution.get(columnLabel);
 			}
 			catch (Exception e){
@@ -1052,8 +1053,13 @@ public class SPARQLSelectResultSet implements ResultSet {
 			throw new SQLException("illegal operation");
 		}
 		else{
-			this.currentRow++;
-			return true;
+			if (this.isLast()) {
+				return false;
+			}
+			else {
+				this.currentRow++;
+				return true;
+			}
 		}
 	}
 
@@ -1062,8 +1068,13 @@ public class SPARQLSelectResultSet implements ResultSet {
 			throw new SQLException("illegal operation");
 		}
 		else{
-			this.currentRow--;
-			return true;
+			if (this.isBeforeFirst()) {
+				return false;
+			}
+			else {
+				this.currentRow--;
+				return true;
+			}
 		}
 	}
 
