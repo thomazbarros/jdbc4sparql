@@ -326,7 +326,7 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 
 	
 	public Literal getNextSolutionAsLiteral(int columnIndex) {
-		return this.getNextSolutionAsLiteral(this.columnNames.get(columnIndex));
+		return this.getNextSolutionAsLiteral(this.columnNames.get(columnIndex-1));
 	}
 	
 	public Literal getNextSolutionAsLiteral(String columnName) {
@@ -337,12 +337,12 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 			return null;
 		}
 		else {
-			return (Literal)this.internalResultSet.get(this.currentRow).getObject();
+			return (Literal)this.internalResultSet.get(this.currentRow-1).getObject();
 		}
 	}
 	
 	public Property getNextSolutionAsProperty(int columnIndex) {
-		return this.getNextSolutionAsProperty(this.columnNames.get(columnIndex));
+		return this.getNextSolutionAsProperty(this.columnNames.get(columnIndex-1));
 	}
 	
 	public Property getNextSolutionAsProperty(String columnName) {
@@ -350,7 +350,7 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 			return null;
 		}
 		else if (columnName == "p") {
-			return (Property)this.internalResultSet.get(this.currentRow).getPredicate();
+			return (Property)this.internalResultSet.get(this.currentRow-1).getPredicate();
 		}
 		else {
 			return null;
@@ -358,18 +358,18 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 	}
 	
 	public Resource getNextSolutionAsResource(int columnIndex) {
-		return this.getNextSolutionAsResource(this.columnNames.get(columnIndex));
+		return this.getNextSolutionAsResource(this.columnNames.get(columnIndex-1));
 	}
 	
 	public Resource getNextSolutionAsResource(String columnName) {
 		if (columnName == "s") {
-			return (Resource)this.internalResultSet.get(this.currentRow).getSubject();
+			return (Resource)this.internalResultSet.get(this.currentRow-1).getSubject();
 		}
 		else if (columnName == "p") {
-			return (Resource)this.internalResultSet.get(this.currentRow).getPredicate();
+			return (Resource)this.internalResultSet.get(this.currentRow-1).getPredicate();
 		}
 		else {
-			return (Resource)this.internalResultSet.get(this.currentRow).getObject();
+			return (Resource)this.internalResultSet.get(this.currentRow-1).getObject();
 		}
 	}
 	
@@ -743,7 +743,7 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 		}
 		else {
 			try {
-				String column = this.columnNames.get(columnIndex);
+				String column = this.columnNames.get(columnIndex-1);
 				return this.getObject(column);
 			}
 			catch (Exception e){
@@ -765,7 +765,7 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 					return this.getNextSolutionAsProperty("p");
 				}
 				else {
-					return (RDFNode)this.internalResultSet.get(this.currentRow).getObject();
+					return (RDFNode)this.internalResultSet.get(this.currentRow-1).getObject();
 				}
 			}
 			catch (Exception e){
@@ -1101,8 +1101,13 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 			throw new SQLException("illegal operation");
 		}
 		else{
-			this.currentRow++;
-			return true;
+			if (this.isLast()) {
+				return false;
+			}
+			else {
+				this.currentRow++;
+				return true;
+			}
 		}
 	}
 
@@ -1111,8 +1116,13 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 			throw new SQLException("illegal operation");
 		}
 		else{
-			this.currentRow--;
-			return true;
+			if (this.isBeforeFirst()) {
+				return false;
+			}
+			else {
+				this.currentRow--;
+				return true;
+			}
 		}
 	}
 
