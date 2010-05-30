@@ -314,20 +314,20 @@ public class SPARQLSelectResultSet implements ResultSet {
 
 	
 	public Literal getNextSolutionAsLiteral(int columnIndex) {
-		return this.getNextSolutionAsLiteral(this.columnNames.get(columnIndex));
+		return this.getNextSolutionAsLiteral(this.columnNames.get(columnIndex-1));
 	}
 	
 	public Literal getNextSolutionAsLiteral(String columnName) {
-		QuerySolution solution = this.internalResultSet.get(this.currentRow);
+		QuerySolution solution = this.internalResultSet.get(this.currentRow-1);
 		return solution.getLiteral(columnName);
 	}
 	
 	public Resource getNextSolutionAsResource(int columnIndex) {
-		return this.getNextSolutionAsResource(this.columnNames.get(columnIndex));
+		return this.getNextSolutionAsResource(this.columnNames.get(columnIndex-1));
 	}
 	
 	public Resource getNextSolutionAsResource(String columnName) {
-		QuerySolution solution = this.internalResultSet.get(this.currentRow);
+		QuerySolution solution = this.internalResultSet.get(this.currentRow-1);
 		return solution.getResource(columnName);
 	}
 	
