@@ -62,17 +62,21 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 		this.sparql = sparql;
 		this.currentRow = 0;
 		this.rsm = new SPARQLConstructResultSetMetaData(this);
+		
 		this.closed = false;
 		this.fetchDirection = ResultSet.FETCH_FORWARD;
 		this.concurrency = ResultSet.CONCUR_READ_ONLY;
 		this.internalResultSet = new Vector<com.hp.hpl.jena.rdf.model.Statement>();
+		
 		StmtIterator stmtIterator = this.model.listStatements();
+		
 		while (stmtIterator.hasNext()){
 			this.internalResultSet.add((com.hp.hpl.jena.rdf.model.Statement)stmtIterator.nextStatement());
 		}
-		this.columnNames.add("s");
-		this.columnNames.add("p");
-		this.columnNames.add("o");
+		this.columnNames = new Vector<String>();
+		this.columnNames.add(new String("s"));
+		this.columnNames.add(new String("p"));
+		this.columnNames.add(new String("o"));
 	}
 	
 	public Model getModel() {
@@ -346,10 +350,10 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 	}
 	
 	public Property getNextSolutionAsProperty(String columnName) {
-		if (columnName == "s") {
+		if (columnName.equals("s")) {
 			return null;
 		}
-		else if (columnName == "p") {
+		else if (columnName.equals("p")) {
 			return (Property)this.internalResultSet.get(this.currentRow-1).getPredicate();
 		}
 		else {
@@ -362,10 +366,10 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 	}
 	
 	public Resource getNextSolutionAsResource(String columnName) {
-		if (columnName == "s") {
+		if (columnName.equals("s")) {
 			return (Resource)this.internalResultSet.get(this.currentRow-1).getSubject();
 		}
-		else if (columnName == "p") {
+		else if (columnName.equals("p")) {
 			return (Resource)this.internalResultSet.get(this.currentRow-1).getPredicate();
 		}
 		else {
@@ -758,10 +762,10 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 		}
 		else {
 			try {
-				if (columnLabel == "s") {
+				if (columnLabel.equals("s")) {
 					return this.getNextSolutionAsResource("s");
 				}
-				else if (columnLabel == "p") {
+				else if (columnLabel.equals("p")) {
 					return this.getNextSolutionAsProperty("p");
 				}
 				else {

@@ -62,6 +62,7 @@ public class SPARQLStatement implements Statement {
 				return true;
 			}
 			if (query.isConstructType()){
+				
 				QueryExecution queryExecution = QueryExecutionFactory.sparqlService(this.conn.getEndPoint(), query, this.conn.getDefaultGraphs(), this.conn.getNamedGraphs());
 				this.resultSet = new SPARQLConstructResultSet(queryExecution.execConstruct(), this, query);
 				return true;
@@ -82,7 +83,6 @@ public class SPARQLStatement implements Statement {
 			return false;
 		}
 		catch (Exception e) {
-			System.out.println("prob1");
 			throw new SQLException (e.getMessage());
 		}
 	}
