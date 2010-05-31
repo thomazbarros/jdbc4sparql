@@ -3,6 +3,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -51,12 +52,12 @@ public class SPARQLTest {
 	public static void main(String[] args) {
 		try { 
 			
-			//String driverName = "org.lexicon.jdbc4sparql.SPARQLDriver"; 
+			String driverName = "org.lexicon.jdbc4sparql.SPARQLDriver"; 
 			//Class.forName(driverName).newInstance(); 
 			//java.sql.Connection con = DriverManager.getConnection("http://www123.com/test");
 			
 			
-			SPARQLDriver sd = new SPARQLDriver();
+			/*SPARQLDriver sd = new SPARQLDriver();
 			SPARQLConnection con = (SPARQLConnection)sd.connect("http://dbpedia.org/sparql", null);
 			System.out.println(con.getConnectionURL());
 			
@@ -71,7 +72,7 @@ public class SPARQLTest {
 				System.out.println(rs.getObject(1).toString());
 				System.out.println(rs.getObject(2).toString());
 				System.out.println(rs.getObject(3).toString());
-			}
+			}*/
 			/*DriverManager.registerDriver(sd);
 			String driverName = "org.lexicon.jdbc4sparql.SPARQLDriver"; 
 			Class.forName(driverName).newInstance(); 
@@ -88,7 +89,30 @@ public class SPARQLTest {
 				System.out.println(d.getClass().getName());
 			}*/
 			//java.sql.Connection con = sd.connect("http://dbpedia.org/sparql", null);
+			Class.forName(driverName).newInstance();
+			Enumeration<java.sql.Driver> en = DriverManager.getDrivers();
 			
+			while (en.hasMoreElements()) {
+				java.sql.Driver d = en.nextElement();
+				System.out.println(d.getClass().getName());
+			}
+			java.sql.Connection con = DriverManager.getConnection("http://dbpedia.org/sparql");
+			SPARQLStatement st = (SPARQLStatement)con.createStatement();
+			ResultSet rs = st.executeQuery("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
+			ResultSetMetaData rsm = rs.getMetaData();
+			System.out.println(rsm.getColumnCount());
+			while (rs.next()) {
+				//Resource rdfn = (Resource)rs.getObject(1);
+				//Resource rdfn = (Resource)rs.getObject(1);
+				//Resource rdfn = (Resource)rs.getObject(1);
+				System.out.println(rs.getObject(1).toString());
+				System.out.println(rs.getObject(2).toString());
+				System.out.println(rs.getObject(3).toString());
+			}
+			ByteArrayOutputStream b = new ByteArrayOutputStream();
+			Model m = (Model)rs;
+			m.write(b);
+			System.out.println(b.toString());
 		} 
 		catch (Exception e) { 
 			System.out.println(e.getMessage());

@@ -50,7 +50,6 @@ public class SPARQLSelectResultSet implements ResultSet {
 	private int fetchSize;
 	
 	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement, Query sqarql){
-		System.out.println("prob2");
 		this.statement = statement;
 		this.resultSet = resultSet;
 		this.currentRow = 0;
@@ -1548,7 +1547,6 @@ public class SPARQLSelectResultSet implements ResultSet {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
 	public void updateTimestamp(int columnIndex, Timestamp x)
 			throws SQLException {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
