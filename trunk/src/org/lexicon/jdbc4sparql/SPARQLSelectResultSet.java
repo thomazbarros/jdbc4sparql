@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 import com.hp.hpl.jena.query.*;
+
 import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -49,22 +50,32 @@ public class SPARQLSelectResultSet implements ResultSet {
 	private Query sparql;
 	private int fetchSize;
 	
-	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement, Query sqarql){
+	public SPARQLSelectResultSet (SPARQLStatement statement, Query sqarql) {
+		this.sparql = sparql;
 		this.statement = statement;
-		this.resultSet = resultSet;
 		this.currentRow = 0;
 		this.closed = false;
-		this.sparql = sparql;
 		this.fetchDirection = ResultSet.FETCH_FORWARD;
 		this.concurrency = ResultSet.CONCUR_READ_ONLY;
 		this.rsm = new SPARQLSelectResultSetMetaData(this);
 		this.type = ResultSet.TYPE_FORWARD_ONLY;
 		this.internalResultSet = new Vector<QuerySolution>();
+	}
+	
+	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement, Query sqarql){
+		this(statement, null);
+		this.resultSet = resultSet;
 		this.columnNames = new Vector<String>(this.resultSet.getResultVars());
 		while (this.resultSet.hasNext()) {
 			this.internalResultSet.add(this.resultSet.next());
 		}
 	}
+	
+	public SPARQLSelectResultSet (boolean result, SPARQLStatement statement, Query sqarql) {
+		
+	}
+	
+	
 	
 	public void setRow(int row) {
 		this.currentRow = row;
@@ -72,6 +83,10 @@ public class SPARQLSelectResultSet implements ResultSet {
 	
 	public Vector<String> getColumnNames() {
 		return this.columnNames;
+	}
+	
+	public void setColumnNames(Vector<String> columnNames) {
+		this.columnNames = columnNames;
 	}
 	
 	public Vector<QuerySolution> getInternalResultSet () {
