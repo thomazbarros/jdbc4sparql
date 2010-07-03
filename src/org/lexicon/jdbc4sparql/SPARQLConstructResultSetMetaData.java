@@ -38,11 +38,11 @@ private SPARQLConstructResultSet rs;
 	}
 
 	public String getColumnLabel(int column) throws SQLException {
-		return this.rs.getColumnNames().get(column);
+		return this.rs.getColumnNames().get(column-1);
 	}
 
 	public String getColumnName(int column) throws SQLException {
-		return this.rs.getColumnNames().get(column);
+		return this.rs.getColumnNames().get(column-1);
 	}
 
 	public int getColumnType(int column) throws SQLException {
@@ -115,7 +115,7 @@ private SPARQLConstructResultSet rs;
 	}
 
 	public boolean isWrapperFor(Class arg0) throws SQLException {
-		if (arg0.getName() == "Model") {
+		if (arg0.getName().equals("Model")) {
 			return true;
 		}
 		else {

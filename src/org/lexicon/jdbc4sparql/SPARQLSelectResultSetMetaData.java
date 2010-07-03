@@ -32,11 +32,11 @@ public class SPARQLSelectResultSetMetaData implements ResultSetMetaData {
 	}
 
 	public String getColumnLabel(int column) throws SQLException {
-		return this.rs.getColumnNames().get(column);
+		return this.rs.getColumnNames().get(column-1);
 	}
 
 	public String getColumnName(int column) throws SQLException {
-		return this.rs.getColumnNames().get(column);
+		return this.rs.getColumnNames().get(column-1);
 	}
 
 	public int getColumnType(int column) throws SQLException {
