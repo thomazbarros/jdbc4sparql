@@ -38,6 +38,7 @@ import com.hp.hpl.jena.datatypes.xsd.*;
 public class SPARQLSelectResultSet implements ResultSet {
 
 	private com.hp.hpl.jena.query.ResultSet resultSet;
+	private Query sparql;
 	private SPARQLStatement statement;
 	private int currentRow;
 	private int type;
@@ -47,10 +48,9 @@ public class SPARQLSelectResultSet implements ResultSet {
 	private SPARQLSelectResultSetMetaData rsm;
 	private int concurrency;
 	private int fetchDirection;
-	private Query sparql;
 	private int fetchSize;
 	
-	public SPARQLSelectResultSet (SPARQLStatement statement, Query sqarql) {
+	public SPARQLSelectResultSet (SPARQLStatement statement, Query sparql) {
 		this.sparql = sparql;
 		this.statement = statement;
 		this.currentRow = 0;
@@ -62,19 +62,14 @@ public class SPARQLSelectResultSet implements ResultSet {
 		this.internalResultSet = new Vector<QuerySolution>();
 	}
 	
-	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement, Query sqarql){
-		this(statement, null);
+	public SPARQLSelectResultSet (com.hp.hpl.jena.query.ResultSet resultSet, SPARQLStatement statement, Query sparql){
+		this(statement, sparql);
 		this.resultSet = resultSet;
 		this.columnNames = new Vector<String>(this.resultSet.getResultVars());
 		while (this.resultSet.hasNext()) {
 			this.internalResultSet.add(this.resultSet.next());
 		}
 	}
-	
-	public SPARQLSelectResultSet (boolean result, SPARQLStatement statement, Query sqarql) {
-		
-	}
-	
 	
 	
 	public void setRow(int row) {
@@ -716,7 +711,6 @@ public class SPARQLSelectResultSet implements ResultSet {
 		else {
 			try {
 				String column = this.columnNames.get(columnIndex-1);
-				System.out.println(column);
 				return this.getObject(column);
 			}
 			catch (Exception e){

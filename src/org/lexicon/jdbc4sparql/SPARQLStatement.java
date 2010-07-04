@@ -76,6 +76,7 @@ public class SPARQLStatement implements Statement {
 				//TODO
 				return true;
 			}
+			//Counted as SPARQL Update
 			if (query.isUnknownType()){
 				//TODO
 				return true;
