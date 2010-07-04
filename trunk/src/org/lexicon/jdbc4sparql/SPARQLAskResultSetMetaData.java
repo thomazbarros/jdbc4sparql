@@ -5,6 +5,12 @@ import java.sql.SQLException;
 
 public class SPARQLAskResultSetMetaData implements ResultSetMetaData {
 
+	private SPARQLAskResultSet rs;
+	
+	public SPARQLAskResultSetMetaData(SPARQLAskResultSet rs) {
+		this.rs = rs;
+	}
+	
 	public String getCatalogName(int arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;

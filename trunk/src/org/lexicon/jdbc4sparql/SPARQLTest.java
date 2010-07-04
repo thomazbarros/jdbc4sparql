@@ -41,6 +41,7 @@ import com.hp.hpl.jena.shared.Lock;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.shared.ReificationStyle;
 import com.hp.hpl.jena.query.*;
+
 import java.util.*;
 
 
@@ -105,14 +106,26 @@ public class SPARQLTest {
 				//Resource rdfn = (Resource)rs.getObject(1);
 				//Resource rdfn = (Resource)rs.getObject(1);
 				//Resource rdfn = (Resource)rs.getObject(1);
-				System.out.println(rs.getObject(1).toString());
-				System.out.println(rs.getObject(2).toString());
-				System.out.println(rs.getObject(3).toString());
+				//System.out.println(rs.getObject(1).toString());
+				//System.out.println(rs.getObject(2).toString());
+				//System.out.println(rs.getObject(3).toString());
 			}
 			ByteArrayOutputStream b = new ByteArrayOutputStream();
 			Model m = (Model)rs;
-			m.write(b);
-			System.out.println(b.toString());
+			//m.write(b);
+			//System.out.println(b.toString());
+			com.hp.hpl.jena.query.ResultSet testRS = ResultSetFactory.fromRDF(m);
+			Iterator t = testRS.getResultVars().iterator();
+			while (t.hasNext()) {
+				System.out.println(t.next());
+			}
+			
+			//Query query = QueryFactory.create("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
+			//QueryExecution queryExecution = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
+			//	this.resultSet = new SPARQLConstructResultSet(queryExecution.execConstruct(), this, query);
+			//	return true;
+			//}
+			
 		} 
 		catch (Exception e) { 
 			System.out.println(e.getMessage());

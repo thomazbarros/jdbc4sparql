@@ -22,36 +22,99 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Vector;
+
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class SPARQLAskResultSet implements ResultSet {
 
-	private boolean result;
+	private boolean resultSet;
 	private SPARQLStatement statement;
-	private int rowNumber;
+
+	private Query sparql;
+	private int currentRow;
+	private int type;
+	private Vector<String> columnNames;
+	private boolean closed;
+	private SPARQLAskResultSetMetaData rsm;
+	private int concurrency;
+	private int fetchDirection;
+	private int fetchSize;
 	
-	public SPARQLAskResultSet(boolean result, SPARQLStatement statement) {
-		this.result = result;
+	public SPARQLAskResultSet(boolean result, SPARQLStatement statement, Query sparql) {
+		this.resultSet = result;
 		this.statement = statement;
-		this.rowNumber = 0;
+		this.sparql = sparql;
+		this.currentRow = 0;
+		this.closed = false;
+		this.fetchDirection = ResultSet.FETCH_FORWARD;
+		this.concurrency = ResultSet.CONCUR_READ_ONLY;
+		this.rsm = new SPARQLAskResultSetMetaData(this);
+		this.type = ResultSet.TYPE_FORWARD_ONLY;
 	}
 	
-	public boolean absolute(int arg0) throws SQLException {
-		return true;
+	public boolean absolute(int row) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			if (row > 1 || row <= -2) {
+				this.afterLast();
+				return false;
+			}
+			else if (row == -1) {
+				this.last();
+				return true;
+			}
+			else if (row == 1) {
+				this.first();
+				return true;
+			}
+			else {
+				this.currentRow = row;
+				return true;
+			}
+		}
 	}
 
+	
 	public void afterLast() throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			this.currentRow = 2;
+		}
 	}
 
+	
 	public void beforeFirst() throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			this.currentRow = 0;
+		}
 	}
 
+	
 	public void cancelRowUpdates() throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
+	
 	public void clearWarnings() throws SQLException {
+		
 	}
 
+	
 	public void close() throws SQLException {
+		this.closed = true;
 	}
 
 	
@@ -59,1086 +122,1295 @@ public class SPARQLAskResultSet implements ResultSet {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	public int findColumn(String arg0) throws SQLException {
-		return 0;
+	
+	public int findColumn(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.columnNames.indexOf(columnLabel);
+		}
 	}
 
 	
 	public boolean first() throws SQLException {
-		this.rowNumber = 0;
-		return true;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			this.currentRow = 1;
+			return true;
+		}
 	}
 
-	public Array getArray(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public Array getArray(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+	
+	public Array getArray(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	public Array getArray(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+
+	public InputStream getAsciiStream(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public InputStream getAsciiStream(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public BigDecimal getBigDecimal(int columnIndex, int scale)
+			throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public BigDecimal getBigDecimal(String columnLabel, int scale)
+			throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public InputStream getBinaryStream(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public InputStream getBinaryStream(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	
-	public InputStream getAsciiStream(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public Blob getBlob(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	
-	public InputStream getAsciiStream(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public Blob getBlob(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+	
+	
+	public boolean getBoolean(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			try {
+				return this.resultSet;
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
+		}
 	}
 
-	public BigDecimal getBigDecimal(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public boolean getBoolean(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			try {
+				return this.resultSet;
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
+		}
+	}
+
+	public byte getByte(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
+	}
+
+	public byte getByte(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
+	}
+
+	public byte[] getBytes(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public byte[] getBytes(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public Reader getCharacterStream(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	
-	public BigDecimal getBigDecimal(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public Reader getCharacterStream(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
 	
-	public BigDecimal getBigDecimal(int arg0, int arg1) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public Clob getClob(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public BigDecimal getBigDecimal(String arg0, int arg1) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public Clob getClob(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public InputStream getBinaryStream(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	
-	public InputStream getBinaryStream(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	
-	public Blob getBlob(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	
-	public Blob getBlob(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	public boolean getBoolean(int arg0) throws SQLException {
-		return this.result;
-	}
-
-	
-	public boolean getBoolean(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	
-	public byte getByte(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	
-	public byte getByte(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	
-	public byte[] getBytes(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public byte[] getBytes(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public Reader getCharacterStream(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public Reader getCharacterStream(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public Clob getClob(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public Clob getClob(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
 	public int getConcurrency() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.concurrency;
+		}
 	}
 
-	
 	public String getCursorName() throws SQLException {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public Date getDate(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Date getDate(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public Date getDate(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Date getDate(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public Date getDate(int arg0, Calendar arg1) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Date getDate(int columnIndex, Calendar cal) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public Date getDate(String arg0, Calendar arg1) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Date getDate(String columnLabel, Calendar cal) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public double getDouble(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getDouble(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	
-	public double getDouble(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getDouble(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	
 	public int getFetchDirection() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.fetchDirection;
+		}
 	}
 
-	
 	public int getFetchSize() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			try {
+				return 1;
+			}
+			catch (Exception e) {
+				throw new SQLException(e.getMessage());
+			}
+		}
+	}
+
+	public float getFloat(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
 	
-	public float getFloat(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	
-	public float getFloat(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public float getFloat(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
 	
 	public int getHoldability() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.statement.getResultSetHoldability();
 	}
 
 	
-	public int getInt(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getInt(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	
-	public int getInt(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getInt(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	
-	public long getLong(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getLong(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	
-	public long getLong(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getLong(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	
 	public ResultSetMetaData getMetaData() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.rsm;
 	}
 
-	
-	public Reader getNCharacterStream(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Reader getNCharacterStream(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public Reader getNCharacterStream(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Reader getNCharacterStream(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public NClob getNClob(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public NClob getNClob(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public NClob getNClob(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public NClob getNClob(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public String getNString(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getNString(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public String getNString(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getNString(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public Object getObject(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Object getObject(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			try {
+				return new Boolean(this.resultSet);
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
+		}
 	}
 
-	
-	public Object getObject(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Object getObject(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.getObject(1);
+		}
 	}
 
-	
-	public Object getObject(int arg0, Map<String, Class<?>> arg1)
+	public Object getObject(int columnIndex, Map<String, Class<?>> map)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.getObject(1);
+		}
 	}
 
-	
-	public Object getObject(String arg0, Map<String, Class<?>> arg1)
+	public Object getObject(String columnLabel, Map<String, Class<?>> map)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return this.getObject(1);
+		}
 	}
 
-	
-	public Ref getRef(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Ref getRef(int columnIndex) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public Ref getRef(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Ref getRef(String columnLabel) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported"); 
 	}
 
-	
 	public int getRow() throws SQLException {
+		return this.currentRow;
+	}
+
+	public RowId getRowId(int columnIndex) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported"); 
+	}
+
+	public RowId getRowId(String columnLabel) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported"); 
+	}
+
+	public SQLXML getSQLXML(int columnIndex) throws SQLException {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public RowId getRowId(int arg0) throws SQLException {
+	public SQLXML getSQLXML(String columnLabel) throws SQLException {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public RowId getRowId(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public short getShort(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	
-	public SQLXML getSQLXML(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public short getShort(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return 0;
+		}
 	}
 
-	
-	public SQLXML getSQLXML(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	
-	public short getShort(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	
-	public short getShort(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	
 	public Statement getStatement() throws SQLException {
 		return this.statement;
 	}
 
+	public String getString(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			try {
+				return String.valueOf(this.resultSet);
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
+		}
+	}
+
+	public String getString(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			try {
+				return String.valueOf(this.resultSet);
+			}
+			catch (Exception e){
+				throw new SQLException(e.getMessage());
+			}
+		}
+	}
+
+	public Time getTime(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public Time getTime(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
 	
-	public String getString(int arg0) throws SQLException {
-		if (this.result) return "true";
-		else return "false";
+	public Time getTime(int columnIndex, Calendar cal) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public String getString(String arg0) throws SQLException {
-		if (this.result) return "true";
-		else return "false";
+	public Time getTime(String columnLabel, Calendar cal) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public Time getTime(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public Timestamp getTimestamp(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public Time getTime(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+	public Timestamp getTimestamp(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
 	}
 
-	
-	public Time getTime(int arg0, Calendar arg1) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	
-	public Time getTime(String arg0, Calendar arg1) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	public Timestamp getTimestamp(int arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	public Timestamp getTimestamp(String arg0) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	public Timestamp getTimestamp(int arg0, Calendar arg1) throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
-	}
-
-	public Timestamp getTimestamp(String arg0, Calendar arg1)
+	public Timestamp getTimestamp(int columnIndex, Calendar cal)
 			throws SQLException {
-		throw new SQLFeatureNotSupportedException("Feature not supported");
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public Timestamp getTimestamp(String columnLabel, Calendar cal)
+			throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return new Timestamp(this.getDate(columnLabel).getTime());
+		}
 	}
 
 	public int getType() throws SQLException {
-		return ResultSet.TYPE_SCROLL_INSENSITIVE;
+		return this.type;
 	}
 
-	public URL getURL(int arg0) throws SQLException {
+	public URL getURL(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public URL getURL(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	
+	public InputStream getUnicodeStream(int columnIndex) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public InputStream getUnicodeStream(String columnLabel) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			return null;
+		}
+	}
+
+	public SQLWarning getWarnings() throws SQLException {
+		return null;
+	}
+
+	public void insertRow() throws SQLException {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public URL getURL(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public InputStream getUnicodeStream(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public InputStream getUnicodeStream(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public SQLWarning getWarnings() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public void insertRow() throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
 	public boolean isAfterLast() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			if (this.currentRow > 1) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
-	
 	public boolean isBeforeFirst() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			if (this.currentRow == 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
-	
 	public boolean isClosed() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		return this.closed;
 	}
 
-	
 	public boolean isFirst() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			if (this.currentRow == 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
-	
 	public boolean isLast() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else {
+			if (this.currentRow == 1) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
-	
 	public boolean last() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			this.currentRow = 1;
+			return true;
+		}
 	}
 
-	
 	public void moveToCurrentRow() throws SQLException {
-		// TODO Auto-generated method stub
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 
 	}
 
-	
 	public void moveToInsertRow() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
 	public boolean next() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			if (this.isLast()) {
+				return false;
+			}
+			else {
+				this.currentRow++;
+				return true;
+			}
+		}
 	}
 
-	
 	public boolean previous() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			if (this.isBeforeFirst()) {
+				return false;
+			}
+			else {
+				this.currentRow--;
+				return true;
+			}
+		}
 	}
 
 	
 	public void refreshRow() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public boolean relative(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean relative(int rows) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
 	public boolean rowDeleted() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
 	public boolean rowInserted() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
 	public boolean rowUpdated() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void setFetchDirection(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void setFetchDirection(int direction) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			this.fetchDirection = direction;
+		}
 	}
 
-	
-	public void setFetchSize(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void setFetchSize(int rows) throws SQLException {
+		if (this.isClosed()) {
+			throw new SQLException("illegal operation");
+		}
+		else{
+			this.fetchSize = rows;
+		}
 	}
 
-	
-	public void updateArray(int arg0, Array arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateArray(int columnIndex, Array x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateArray(String arg0, Array arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateArray(String columnLabel, Array x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateAsciiStream(int arg0, InputStream arg1)
+	public void updateAsciiStream(int columnIndex, InputStream x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateAsciiStream(String arg0, InputStream arg1)
+	public void updateAsciiStream(String columnLabel, InputStream x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateAsciiStream(int arg0, InputStream arg1, int arg2)
+	public void updateAsciiStream(int columnIndex, InputStream x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateAsciiStream(String arg0, InputStream arg1, int arg2)
+	public void updateAsciiStream(String columnLabel, InputStream x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateAsciiStream(int arg0, InputStream arg1, long arg2)
+	public void updateAsciiStream(int columnIndex, InputStream x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateAsciiStream(String arg0, InputStream arg1, long arg2)
+	public void updateAsciiStream(String columnLabel, InputStream x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateBigDecimal(String arg0, BigDecimal arg1)
+	public void updateBigDecimal(int columnIndex, BigDecimal x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateBinaryStream(int arg0, InputStream arg1)
+	public void updateBigDecimal(String columnLabel, BigDecimal x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateBinaryStream(String arg0, InputStream arg1)
+	public void updateBinaryStream(int columnIndex, InputStream x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateBinaryStream(int arg0, InputStream arg1, int arg2)
+	public void updateBinaryStream(String columnLabel, InputStream x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateBinaryStream(String arg0, InputStream arg1, int arg2)
+	public void updateBinaryStream(int columnIndex, InputStream x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateBinaryStream(int arg0, InputStream arg1, long arg2)
+	public void updateBinaryStream(String columnLabel, InputStream x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
-	public void updateBinaryStream(String arg0, InputStream arg1, long arg2)
+	public void updateBinaryStream(int columnIndex, InputStream x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateBlob(int arg0, Blob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateBinaryStream(String columnLabel, InputStream x,
+			long length) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateBlob(String arg0, Blob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateBlob(int columnIndex, Blob x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateBlob(int arg0, InputStream arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateBlob(String columnLabel, Blob x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateBlob(String arg0, InputStream arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateBlob(int arg0, InputStream arg1, long arg2)
+	public void updateBlob(int columnIndex, InputStream inputStream)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateBlob(String arg0, InputStream arg1, long arg2)
+	public void updateBlob(String columnLabel, InputStream inputStream)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateBoolean(int arg0, boolean arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateBoolean(String arg0, boolean arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateByte(int arg0, byte arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateByte(String arg0, byte arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateBytes(int arg0, byte[] arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateBytes(String arg0, byte[] arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateCharacterStream(int arg0, Reader arg1)
+	public void updateBlob(int columnIndex, InputStream inputStream, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateCharacterStream(String arg0, Reader arg1)
+	public void updateBlob(String columnLabel, InputStream inputStream,
+			long length) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateBoolean(int columnIndex, boolean x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateBoolean(String columnLabel, boolean x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateCharacterStream(int arg0, Reader arg1, int arg2)
+	public void updateByte(int columnIndex, byte x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateByte(String columnLabel, byte x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateBytes(int columnIndex, byte[] x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateBytes(String columnLabel, byte[] x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateCharacterStream(int columnIndex, Reader x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateCharacterStream(String arg0, Reader arg1, int arg2)
+	public void updateCharacterStream(String columnLabel, Reader reader)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateCharacterStream(int arg0, Reader arg1, long arg2)
+	public void updateCharacterStream(int columnIndex, Reader x, int length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateCharacterStream(String arg0, Reader arg1, long arg2)
+	public void updateCharacterStream(String columnLabel, Reader reader,
+			int length) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateCharacterStream(int columnIndex, Reader x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateClob(int arg0, Clob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateCharacterStream(String columnLabel, Reader reader,
+			long length) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateClob(String arg0, Clob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateClob(int columnIndex, Clob x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateClob(int arg0, Reader arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateClob(String columnLabel, Clob x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateClob(String arg0, Reader arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateClob(int columnIndex, Reader reader) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateClob(int arg0, Reader arg1, long arg2)
+	public void updateClob(String columnLabel, Reader reader)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateClob(String arg0, Reader arg1, long arg2)
+	public void updateClob(int columnIndex, Reader reader, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateDate(int arg0, Date arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateDate(String arg0, Date arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateDouble(int arg0, double arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateDouble(String arg0, double arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateFloat(int arg0, float arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateFloat(String arg0, float arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateInt(int arg0, int arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateInt(String arg0, int arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateLong(int arg0, long arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateLong(String arg0, long arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateNCharacterStream(int arg0, Reader arg1)
+	public void updateClob(String columnLabel, Reader reader, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNCharacterStream(String arg0, Reader arg1)
+	public void updateDate(int columnIndex, Date x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateDate(String columnLabel, Date x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateDouble(int columnIndex, double x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateDouble(String columnLabel, double x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateFloat(int columnIndex, float x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateFloat(String columnLabel, float x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateInt(int columnIndex, int x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateInt(String columnLabel, int x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateLong(int columnIndex, long x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateLong(String columnLabel, long x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateNCharacterStream(int columnIndex, Reader x)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNCharacterStream(int arg0, Reader arg1, long arg2)
+	public void updateNCharacterStream(String columnLabel, Reader reader)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNCharacterStream(String arg0, Reader arg1, long arg2)
+	public void updateNCharacterStream(int columnIndex, Reader x, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNClob(int arg0, NClob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateNCharacterStream(String columnLabel, Reader reader,
+			long length) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNClob(String arg0, NClob arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateNClob(int columnIndex, NClob clob) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNClob(int arg0, Reader arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateNClob(String columnLabel, NClob clob) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNClob(String arg0, Reader arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateNClob(int columnIndex, Reader reader) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNClob(int arg0, Reader arg1, long arg2)
+	public void updateNClob(String columnLabel, Reader reader)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNClob(String arg0, Reader arg1, long arg2)
+	public void updateNClob(int columnIndex, Reader reader, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateNString(int arg0, String arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateNString(String arg0, String arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateNull(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateNull(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateObject(int arg0, Object arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateObject(String arg0, Object arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateObject(int arg0, Object arg1, int arg2)
+	public void updateNClob(String columnLabel, Reader reader, long length)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateObject(String arg0, Object arg1, int arg2)
+	public void updateNString(int columnIndex, String string)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateRef(int arg0, Ref arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateNString(String columnLabel, String string)
+			throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateRef(String arg0, Ref arg1) throws SQLException {
-		// TODO Auto-generated method stub
+	public void updateNull(int columnIndex) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
 
+	
+	public void updateNull(String columnLabel) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateObject(int columnIndex, Object x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateObject(String columnLabel, Object x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateObject(int columnIndex, Object x, int scaleOrLength)
+			throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateObject(String columnLabel, Object x, int scaleOrLength)
+			throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateRef(int columnIndex, Ref x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateRef(String columnLabel, Ref x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
 	public void updateRow() throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateRowId(int arg0, RowId arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateRowId(int columnIndex, RowId x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateRowId(String arg0, RowId arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void updateRowId(String columnLabel, RowId x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
-	public void updateSQLXML(int arg0, SQLXML arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateShort(int arg0, short arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateShort(String arg0, short arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateString(int arg0, String arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateString(String arg0, String arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateTime(int arg0, Time arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateTime(String arg0, Time arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateTimestamp(int arg0, Timestamp arg1) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	public void updateTimestamp(String arg0, Timestamp arg1)
+	public void updateSQLXML(int columnIndex, SQLXML xmlObject)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
 	
+	public void updateSQLXML(String columnLabel, SQLXML xmlObject)
+			throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateShort(int columnIndex, short x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateShort(String columnLabel, short x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateString(int columnIndex, String x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateString(String columnLabel, String x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateTime(int columnIndex, Time x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateTime(String columnLabel, Time x) throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	public void updateTimestamp(int columnIndex, Timestamp x)
+			throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
+	
+	public void updateTimestamp(String columnLabel, Timestamp x)
+			throws SQLException {
+		throw new SQLFeatureNotSupportedException("Feature not supported");
+	}
+
 	public boolean wasNull() throws SQLException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	
-	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
-		// TODO Auto-generated method stub
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		return false;
 	}
 
-	
-	public <T> T unwrap(Class<T> arg0) throws SQLException {
-		// TODO Auto-generated method stub
+	public <T> T unwrap(Class<T> iface) throws SQLException {
 		return null;
 	}
 
