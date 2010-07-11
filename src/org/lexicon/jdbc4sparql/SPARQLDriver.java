@@ -9,6 +9,10 @@ import java.util.Properties;
 
 public class SPARQLDriver implements Driver {
 
+	public static final String DRIVER_PREFIX = "jdbc:sparql:";
+	static final int MAJOR_VERSION = 0;
+	static final int MINOR_VERSION = 1;
+	
 	public SPARQLDriver() {
 		try {
 			DriverManager.registerDriver(this);
@@ -18,7 +22,6 @@ public class SPARQLDriver implements Driver {
 		}
 	}
 	
-	@Override
 	public boolean acceptsURL(String url) throws SQLException {
 		try {
             SPARQLConnection conn = new SPARQLConnection();
@@ -31,7 +34,6 @@ public class SPARQLDriver implements Driver {
         return true;
 	}
 
-	@Override
 	public Connection connect(String url, Properties arg1) throws SQLException {
 		try {
 			SPARQLConnection conn = new SPARQLConnection(url);
@@ -42,26 +44,19 @@ public class SPARQLDriver implements Driver {
         }
 	}
 
-	@Override
 	public int getMajorVersion() {
-		// TODO Auto-generated method stub
-		return 0;
+		return SPARQLDriver.MAJOR_VERSION;
 	}
 
-	@Override
 	public int getMinorVersion() {
-		// TODO Auto-generated method stub
-		return 1;
+		return SPARQLDriver.MINOR_VERSION;
 	}
 
-	@Override
 	public DriverPropertyInfo[] getPropertyInfo(String arg0, Properties arg1) throws SQLException {
 		return null;
 	}
 
-	@Override
 	public boolean jdbcCompliant() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

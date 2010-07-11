@@ -45,6 +45,7 @@ public class SPARQLAskResultSet implements ResultSet {
 	private int concurrency;
 	private int fetchDirection;
 	private int fetchSize;
+	public static final String columnLabel = "result";
 	
 	public SPARQLAskResultSet(boolean result, SPARQLStatement statement, Query sparql) {
 		this.resultSet = result;

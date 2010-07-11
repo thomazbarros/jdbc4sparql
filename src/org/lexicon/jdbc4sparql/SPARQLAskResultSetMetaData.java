@@ -11,118 +11,100 @@ public class SPARQLAskResultSetMetaData implements ResultSetMetaData {
 		this.rs = rs;
 	}
 	
-	public String getCatalogName(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getCatalogName(int column) throws SQLException {
+		return "";
 	}
 
-	public String getColumnClassName(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getColumnClassName(int column) throws SQLException {
+		return "java.lang.Boolean";
 	}
 
 	public int getColumnCount() throws SQLException {
-		// TODO Auto-generated method stub
+		return 1;
+	}
+
+	public int getColumnDisplaySize(int column) throws SQLException {
+		return 255;
+	}
+
+	public String getColumnLabel(int column) throws SQLException {
+		return SPARQLAskResultSet.columnLabel;
+	}
+
+	public String getColumnName(int column) throws SQLException {
+		if (column == 1) {
+			return SPARQLAskResultSet.columnLabel;
+		}
+		else {
+			throw new SQLException("column not found");
+		}
+	}
+
+	public int getColumnType(int column) throws SQLException {
+		return java.sql.Types.BOOLEAN;	
+	}
+
+	public String getColumnTypeName(int column) throws SQLException {
+		return "RDFNode";
+	}
+
+	public int getPrecision(int column) throws SQLException {
 		return 0;
 	}
 
-	public int getColumnDisplaySize(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
+	public int getScale(int column) throws SQLException {
 		return 0;
 	}
 
-	public String getColumnLabel(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getSchemaName(int column) throws SQLException {
+		return "";
 	}
 
-	public String getColumnName(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getTableName(int column) throws SQLException {
+		return "";
 	}
 
-	public int getColumnType(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
+	public boolean isAutoIncrement(int column) throws SQLException {
+		return false;
+	}
+
+	public boolean isCaseSensitive(int column) throws SQLException {
+		return false;
+	}
+
+	public boolean isCurrency(int column) throws SQLException {
+		return false;
+	}
+
+	public boolean isDefinitelyWritable(int column) throws SQLException {
+		return false;
+	}
+
+	public int isNullable(int column) throws SQLException {
 		return 0;
 	}
 
-	public String getColumnTypeName(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean isReadOnly(int column) throws SQLException {
+		return true;
 	}
 
-	public int getPrecision(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int getScale(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public String getSchemaName(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getTableName(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public boolean isAutoIncrement(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
+	public boolean isSearchable(int column) throws SQLException {
 		return false;
 	}
 
-	public boolean isCaseSensitive(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
+	public boolean isSigned(int column) throws SQLException {
 		return false;
 	}
 
-	public boolean isCurrency(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isDefinitelyWritable(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public int isNullable(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public boolean isReadOnly(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isSearchable(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isSigned(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isWritable(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
+	public boolean isWritable(int column) throws SQLException {
 		return false;
 	}
 
 	public boolean isWrapperFor(Class arg0) throws SQLException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public Object unwrap(Class arg0) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
