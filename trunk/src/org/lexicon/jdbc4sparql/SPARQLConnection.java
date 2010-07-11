@@ -38,6 +38,7 @@ public class SPARQLConnection implements Connection {
 	private Map<String, Class<?>> typeMap;
 	private String endPoint;
 	
+	
 	public SPARQLConnection(String connectionURL)throws SQLException {
 		this.connectionURL = connectionURL;
         try {
@@ -61,10 +62,12 @@ public class SPARQLConnection implements Connection {
         this.closed = false;
         this.typeMap = (Map)new HashMap();
         
-        String[] tmp = this.connectionURL.split("\\?");
+        String sparqlURI = this.connectionURL.replaceFirst(SPARQLDriver.DRIVER_PREFIX, "http:");
+        
+        String[] tmp = sparqlURI.split("\\?");
         this.endPoint = tmp[0];
         if (tmp.length > 1) {
-	        String[] parameters = this.connectionURL.split("\\?")[1].split("&");
+	        String[] parameters = sparqlURI.split("\\?")[1].split("&");
 	        for (int x = 0; x < parameters.length; x++) {
 	        	if (parameters[x].split("=")[0] == "default-graph-uri") {
 	        		this.defaultGraphs.add(parameters[x].split("=")[1]);
@@ -142,33 +145,24 @@ public class SPARQLConnection implements Connection {
 		return this.autoCommit;
 	}
 
-	@Override
 	public String getCatalog() throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public Properties getClientInfo() throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getClientInfo(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
 	public int getHoldability() throws SQLException {
-		
 		return this.holdability;
 	}
 
-	@Override
 	public DatabaseMetaData getMetaData() throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -188,7 +182,6 @@ public class SPARQLConnection implements Connection {
 		return null;
 	}
 
-	
 	public boolean isClosed() throws SQLException {
 		
 		return this.closed;
@@ -200,7 +193,6 @@ public class SPARQLConnection implements Connection {
 		return this.readOnly;
 	}
 
-	
 	public boolean isValid(int arg0) throws SQLException {
 		if (this.closed) return false;
 		else return true;
@@ -288,17 +280,11 @@ public class SPARQLConnection implements Connection {
 		
 	}
 
-	@Override
 	public void setClientInfo(Properties arg0) throws SQLClientInfoException {
-		// TODO Auto-generated method stub
-
 	}
 
-	@Override
 	public void setClientInfo(String arg0, String arg1)
 			throws SQLClientInfoException {
-		// TODO Auto-generated method stub
-
 	}
 
 	
@@ -311,32 +297,26 @@ public class SPARQLConnection implements Connection {
 		
 	}
 
-	
 	public Savepoint setSavepoint() throws SQLException {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
 	public Savepoint setSavepoint(String arg0) throws SQLException {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
 
-	
 	public void setTransactionIsolation(int transactionIsolation) throws SQLException {
 		this.transactionIsolation = transactionIsolation;
 	}
 
-	
 	public void setTypeMap(Map<String, Class<?>> typeMap) throws SQLException {
 		this.typeMap = typeMap;
 	}
 
-	
 	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		return false;
 	}
 
-	@Override
 	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		throw new SQLFeatureNotSupportedException("Feature not supported");
 	}
