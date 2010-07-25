@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import com.hp.hpl.jena.rdf.model.*;
 
 
 public class SPARQLStatement implements Statement {
@@ -80,11 +81,11 @@ public class SPARQLStatement implements Statement {
 					qeHTTP.addDefaultGraph((String)i.next());
 				}
 			}
-			
+		
 			if (this.conn.getNamedGraphs().size() > 0) {
 				Iterator i = this.conn.getNamedGraphs().iterator();
 				while (i.hasNext()){
-					qeHTTP.addDefaultGraph((String)i.next());
+					qeHTTP.addNamedGraph((String)i.next());
 				}
 			}
 			
@@ -94,6 +95,7 @@ public class SPARQLStatement implements Statement {
 			}
 			if (query.isConstructType()){
 				this.resultSet = new SPARQLConstructResultSet(qeHTTP.execConstruct(), this, query);
+				
 				return true;
 			}
 			if (query.isDescribeType()){
@@ -104,11 +106,13 @@ public class SPARQLStatement implements Statement {
 				this.resultSet = new SPARQLAskResultSet(qeHTTP.execAsk(), this, query);
 				return true;
 			}
+			/*
 			//Counted as SPARQL Update
 			if (query.isUnknownType()){
 				this.executeUpdate(sparql);
 				return true;
 			}
+			*/
 			return false;
 		}
 		catch (Exception e) {

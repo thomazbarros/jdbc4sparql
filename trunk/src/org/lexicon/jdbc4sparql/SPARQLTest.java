@@ -97,7 +97,7 @@ public class SPARQLTest {
 				java.sql.Driver d = en.nextElement();
 				System.out.println(d.getClass().getName());
 			}
-			java.sql.Connection con = DriverManager.getConnection("http://dbpedia.org/sparql");
+			java.sql.Connection con = DriverManager.getConnection("jdbc:sparql:http://dbpedia.org/sparql");
 			SPARQLStatement st = (SPARQLStatement)con.createStatement();
 			ResultSet rs = st.executeQuery("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
 			ResultSetMetaData rsm = rs.getMetaData();
@@ -110,7 +110,7 @@ public class SPARQLTest {
 				//System.out.println(rs.getObject(2).toString());
 				//System.out.println(rs.getObject(3).toString());
 			}
-			ByteArrayOutputStream b = new ByteArrayOutputStream();
+			/*ByteArrayOutputStream b = new ByteArrayOutputStream();
 			Model m = (Model)rs;
 			//m.write(b);
 			//System.out.println(b.toString());
@@ -124,7 +124,7 @@ public class SPARQLTest {
 			//QueryExecution queryExecution = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
 			//	this.resultSet = new SPARQLConstructResultSet(queryExecution.execConstruct(), this, query);
 			//	return true;
-			//}
+			//}*/
 			
 		} 
 		catch (Exception e) { 
