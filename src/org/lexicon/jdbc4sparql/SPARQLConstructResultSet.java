@@ -57,6 +57,7 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 	private int fetchSize;
 	
 	public SPARQLConstructResultSet (Model model, SPARQLStatement statement, Query sparql) {
+		
 		this.model = model;
 		this.statement = statement;
 		this.sparql = sparql;
@@ -77,6 +78,7 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 		this.columnNames.add(new String("s"));
 		this.columnNames.add(new String("p"));
 		this.columnNames.add(new String("o"));
+		
 	}
 	
 	public Model getModel() {

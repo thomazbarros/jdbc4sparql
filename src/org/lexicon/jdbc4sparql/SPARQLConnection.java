@@ -61,8 +61,10 @@ public class SPARQLConnection implements Connection {
         this.readOnly = false;
         this.closed = false;
         this.typeMap = (Map)new HashMap();
+        this.defaultGraphs = new LinkedList<String>();
+        this.namedGraphs = new LinkedList<String>();
         
-        String sparqlURI = this.connectionURL.replaceFirst(SPARQLDriver.DRIVER_PREFIX, "http:");
+        String sparqlURI = this.connectionURL.replaceFirst(SPARQLDriver.DRIVER_PREFIX, "");
         
         String[] tmp = sparqlURI.split("\\?");
         this.endPoint = tmp[0];
