@@ -55,6 +55,8 @@ public class SPARQLConnection implements Connection {
 	
 	@SuppressWarnings("unchecked")
 	public void init() throws SQLException {
+		
+		//construction
 		this.holdability = ResultSet.CLOSE_CURSORS_AT_COMMIT;
         this.transactionIsolation = Connection.TRANSACTION_NONE;
         this.autoCommit = true;
@@ -64,8 +66,10 @@ public class SPARQLConnection implements Connection {
         this.defaultGraphs = new LinkedList<String>();
         this.namedGraphs = new LinkedList<String>();
         
+        //resolve connection URL
         String sparqlURI = this.connectionURL.replaceFirst(SPARQLDriver.DRIVER_PREFIX, "");
         
+        //Parse connection URL
         String[] tmp = sparqlURI.split("\\?");
         this.endPoint = tmp[0];
         if (tmp.length > 1) {
