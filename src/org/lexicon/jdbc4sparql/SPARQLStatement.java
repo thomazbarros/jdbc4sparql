@@ -28,7 +28,7 @@ public class SPARQLStatement implements Statement {
 	private Vector<String> batches;
 	private boolean closed;
 	private int timeout;
-	public static final String acceptHeader = "text/xml";
+	public static final String acceptHeader = "application/sparql-results+xml";
 	public static final String userAgentHeader = "jdbc4sparql";
 	
 	public SPARQLStatement(SPARQLConnection conn) {
@@ -106,15 +106,20 @@ public class SPARQLStatement implements Statement {
 				this.resultSet = new SPARQLAskResultSet(qeHTTP.execAsk(), this, query);
 				return true;
 			}
-			/*
+			
 			//Counted as SPARQL Update
 			if (query.isUnknownType()){
 				this.executeUpdate(sparql);
 				return true;
 			}
-			*/
+			
 			return false;
 		}
+		catch (QueryParseException e) {
+			this.executeUpdate(sparql);
+			return true;
+		}
+		
 		catch (Exception e) {
 			throw new SQLException (e.getMessage());
 		}
@@ -148,7 +153,7 @@ public class SPARQLStatement implements Statement {
 	public int executeUpdate(String sparql) throws SQLException {
 		URL servicePoint = null;
 		try {
-			servicePoint = new URL(this.conn.getConnectionURL());
+			servicePoint = new URL(this.conn.getEndPoint());
 			HttpURLConnection http = null;
 			http = (HttpURLConnection) servicePoint.openConnection();
 			if (this.conn.getUsername() != null && this.conn.getPassword() != null) {

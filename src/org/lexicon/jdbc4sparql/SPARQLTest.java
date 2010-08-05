@@ -99,7 +99,8 @@ public class SPARQLTest {
 			}
 			java.sql.Connection con = DriverManager.getConnection("jdbc:sparql:http://dbpedia.org/sparql");
 			SPARQLStatement st = (SPARQLStatement)con.createStatement();
-			ResultSet rs = st.executeQuery("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
+			//ResultSet rs = st.executeQuery("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
+			ResultSet rs = st.executeQuery("PREFIX dc: <http://purl.org/dc/elements/1.1/> INSERT DATA { <http://example/book3> dc:title \"A new book\" ; dc:creator  \"A.N.Other\" .}");
 			ResultSetMetaData rsm = rs.getMetaData();
 			System.out.println(rsm.getColumnCount());
 			while (rs.next()) {
