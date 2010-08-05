@@ -36,7 +36,7 @@ public class SPARQLDriver implements Driver {
 
 	public Connection connect(String url, Properties arg1) throws SQLException {
 		try {
-			SPARQLConnection conn = new SPARQLConnection(url);
+			SPARQLConnection conn = new SPARQLConnection(url, arg1);
             return conn;
         }
         catch (Exception e) {

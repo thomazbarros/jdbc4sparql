@@ -37,10 +37,11 @@ public class SPARQLConnection implements Connection {
 	private boolean closed;
 	private Map<String, Class<?>> typeMap;
 	private String endPoint;
+	private Properties connectionProperties;
 	
-	
-	public SPARQLConnection(String connectionURL)throws SQLException {
+	public SPARQLConnection(String connectionURL, Properties connectionProperties)throws SQLException {
 		this.connectionURL = connectionURL;
+		this.connectionProperties = connectionProperties;
         try {
             this.init();
         }
@@ -65,6 +66,14 @@ public class SPARQLConnection implements Connection {
         this.typeMap = (Map)new HashMap();
         this.defaultGraphs = new LinkedList<String>();
         this.namedGraphs = new LinkedList<String>();
+        
+        this.username = this.connectionProperties.getProperty("username");
+        if (this.username == null) this.username = this.connectionProperties.getProperty("Username");
+        if (this.username == null) this.username = this.connectionProperties.getProperty("USERNAME");
+        
+        this.password = this.connectionProperties.getProperty("password");
+        if (this.password == null) this.password = this.connectionProperties.getProperty("Password");
+        if (this.password == null) this.password = this.connectionProperties.getProperty("PASSWORD");
         
         //resolve connection URL
         String sparqlURI = this.connectionURL.replaceFirst(SPARQLDriver.DRIVER_PREFIX, "");
