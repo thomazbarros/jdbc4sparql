@@ -93,6 +93,8 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 		return this.columnNames;
 	}
 	
+	
+	
 	public Vector<com.hp.hpl.jena.rdf.model.Statement> getInternalResultSet () {
 		return this.internalResultSet;
 	}
@@ -2628,6 +2630,10 @@ public class SPARQLConstructResultSet implements ResultSet, Model {
 	@Override
 	public void leaveCriticalSection() {
 		this.model.leaveCriticalSection();
+	}
+	
+	public Resource wrapAsResource(Node n) {
+		return this.model.wrapAsResource(n);
 	}
 
 }
