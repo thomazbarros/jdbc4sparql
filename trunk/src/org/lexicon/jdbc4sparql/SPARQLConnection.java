@@ -86,8 +86,7 @@ public class SPARQLConnection implements Connection {
         if (tmp.length > 1) {
 	        String[] parameters = tmp[1].split("&");
 	        for (int x = 0; x < parameters.length; x++) {
-	        	System.out.println("yes");
-	        	
+	        	      	
 	        	if (parameters[x].split("=")[0].equals("default-graph-uri")) {
 	        		this.defaultGraphs.add(parameters[x].split("=")[1]);
 	        	}
