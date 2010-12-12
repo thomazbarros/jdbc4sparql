@@ -67,22 +67,24 @@ public class SPARQLConnection implements Connection {
         this.defaultGraphs = new LinkedList<String>();
         this.namedGraphs = new LinkedList<String>();
         
-        this.username = this.connectionProperties.getProperty("username");
-        if (this.username == null) this.username = this.connectionProperties.getProperty("Username");
-        if (this.username == null) this.username = this.connectionProperties.getProperty("USERNAME");
-        
-        this.password = this.connectionProperties.getProperty("password");
-        if (this.password == null) this.password = this.connectionProperties.getProperty("Password");
-        if (this.password == null) this.password = this.connectionProperties.getProperty("PASSWORD");
-        
+        if (this.connectionProperties != null) {
+	        this.username = this.connectionProperties.getProperty("username");
+	        if (this.username == null) this.username = this.connectionProperties.getProperty("Username");
+	        if (this.username == null) this.username = this.connectionProperties.getProperty("USERNAME");
+	        
+	        this.password = this.connectionProperties.getProperty("password");
+	        if (this.password == null) this.password = this.connectionProperties.getProperty("Password");
+	        if (this.password == null) this.password = this.connectionProperties.getProperty("PASSWORD");
+	    
+        }
         //resolve connection URL
         String sparqlURI = this.connectionURL.replaceFirst(SPARQLDriver.DRIVER_PREFIX, "");
         
         //Parse connection URL
-        String[] tmp = sparqlURI.split("\\?");
+        String[] tmp = sparqlURI.split("//");
         this.endPoint = tmp[0];
         if (tmp.length > 1) {
-	        String[] parameters = sparqlURI.split("\\?")[1].split("&");
+	        String[] parameters = sparqlURI.split("//")[1].split("&");
 	        for (int x = 0; x < parameters.length; x++) {
 	        	if (parameters[x].split("=")[0] == "default-graph-uri") {
 	        		this.defaultGraphs.add(parameters[x].split("=")[1]);
