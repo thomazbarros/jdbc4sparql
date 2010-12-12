@@ -173,7 +173,7 @@ public class SPARQLStatement implements Statement {
 		    wr.flush ();
 		    wr.close ();
 			
-			//http.connect();
+			http.connect();
 			int code = http.getResponseCode() ;
 			if (code >= 400) {
 				String message = URLDecoder.decode(http.getResponseMessage(), "UTF-8");
