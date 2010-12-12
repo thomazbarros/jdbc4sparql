@@ -14,7 +14,12 @@ public class SPARQLDriver implements Driver {
 	static final int MINOR_VERSION = 1;
 	
 	public SPARQLDriver() {
-		
+		try {
+			DriverManager.registerDriver(this);
+		}
+		catch (Exception e) {
+			
+		}
 	}
 	
 	public boolean acceptsURL(String url) throws SQLException {
