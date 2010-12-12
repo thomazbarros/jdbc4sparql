@@ -19,6 +19,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import com.hp.hpl.jena.rdf.model.*;
+import java.io.DataOutputStream;
 
 
 public class SPARQLStatement implements Statement {
@@ -162,8 +163,17 @@ public class SPARQLStatement implements Statement {
 			http.setRequestProperty("Accept", SPARQLStatement.acceptHeader);
 			http.setRequestProperty("User-agent", SPARQLStatement.userAgentHeader);
 			http.setRequestMethod("POST");
+			http.setRequestProperty("Content-Length", "" + Integer.toString(sparql.getBytes().length));
 			http.setDoInput(true);
-			http.connect();
+			http.setDoOutput(true);
+			
+			//Send request
+		    DataOutputStream wr = new DataOutputStream (http.getOutputStream ());
+		    wr.writeBytes (sparql);
+		    wr.flush ();
+		    wr.close ();
+			
+			//http.connect();
 			int code = http.getResponseCode() ;
 			if (code >= 400) {
 				String message = URLDecoder.decode(http.getResponseMessage(), "UTF-8");
@@ -178,7 +188,9 @@ public class SPARQLStatement implements Statement {
 			String msg = "Could not make http request due to " + e.toString();
 			throw new SQLException (msg);
 		}
-		this.execute(sparql);
+		catch (Exception e) {
+			throw new SQLException (e.toString());
+		}
 		return 0;
 	}
 
