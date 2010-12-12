@@ -59,8 +59,8 @@ public class SPARQLTest {
 			
 			
 			SPARQLDriver sd = new SPARQLDriver();
-			SPARQLConnection con1 = (SPARQLConnection)sd.connect("jdbc:sparql:http://dbpedia.org/sparql", null);
-			System.out.println(con1.getConnectionURL());
+			SPARQLConnection con1 = (SPARQLConnection)sd.connect("jdbc:sparql:http://dbpedia.org/sparql?username=john&password=smith", null);
+			System.out.println(con1.getUsername() + " " + con1.getPassword());
 			/*
 			SPARQLStatement st = (SPARQLStatement)con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 1");
@@ -97,25 +97,22 @@ public class SPARQLTest {
 				java.sql.Driver d = en.nextElement();
 				System.out.println(d.getClass().getName());
 			}
-			//java.sql.Connection con = DriverManager.getConnection("jdbc:sparql:http://dbpedia.org/sparql");
-			//SPARQLStatement st = (SPARQLStatement)con.createStatement();
-			//ResultSet rs = st.executeQuery("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
-			//ResultSet rs = st.executeQuery("PREFIX dc: <http://purl.org/dc/elements/1.1/> INSERT DATA { <http://example/book3> dc:title \"A new book\" ; dc:creator  \"A.N.Other\" .}");
+			java.sql.Connection con = DriverManager.getConnection("jdbc:sparql:http://dbpedia.org/sparql");
+			SPARQLStatement st = (SPARQLStatement)con.createStatement();
+			ResultSet rs = st.executeQuery("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
+			//ResultSet rs2 = st.executeQuery("PREFIX dc: <http://purl.org/dc/elements/1.1/> INSERT DATA { <http://example/book3> dc:title \"A new book\" ; dc:creator  \"A.N.Other\" .}");
 			//ResultSetMetaData rsm = rs.getMetaData();
 			//System.out.println(rsm.getColumnCount());
-			//while (rs.next()) {
-				//Resource rdfn = (Resource)rs.getObject(1);
-				//Resource rdfn = (Resource)rs.getObject(1);
-				//Resource rdfn = (Resource)rs.getObject(1);
-				//System.out.println(rs.getObject(1).toString());
-				//System.out.println(rs.getObject(2).toString());
-				//System.out.println(rs.getObject(3).toString());
+			//while (rs2.next()) {
+			//	System.out.println(rs2.getObject(1).toString());
+			//	System.out.println(rs2.getObject(2).toString());
+			//	System.out.println(rs2.getObject(3).toString());
 			//}
-			/*ByteArrayOutputStream b = new ByteArrayOutputStream();
+			ByteArrayOutputStream b = new ByteArrayOutputStream();
 			Model m = (Model)rs;
-			//m.write(b);
-			//System.out.println(b.toString());
-			com.hp.hpl.jena.query.ResultSet testRS = ResultSetFactory.fromRDF(m);
+			m.write(b);
+			System.out.println(b.toString());
+			/*com.hp.hpl.jena.query.ResultSet testRS = ResultSetFactory.fromRDF(m);
 			Iterator t = testRS.getResultVars().iterator();
 			while (t.hasNext()) {
 				System.out.println(t.next());

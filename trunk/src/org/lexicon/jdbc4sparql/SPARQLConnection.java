@@ -81,21 +81,23 @@ public class SPARQLConnection implements Connection {
         String sparqlURI = this.connectionURL.replaceFirst(SPARQLDriver.DRIVER_PREFIX, "");
         
         //Parse connection URL
-        String[] tmp = sparqlURI.split("//");
+        String[] tmp = sparqlURI.split("[?]");
         this.endPoint = tmp[0];
         if (tmp.length > 1) {
-	        String[] parameters = sparqlURI.split("//")[1].split("&");
+	        String[] parameters = tmp[1].split("&");
 	        for (int x = 0; x < parameters.length; x++) {
-	        	if (parameters[x].split("=")[0] == "default-graph-uri") {
+	        	System.out.println("yes");
+	        	
+	        	if (parameters[x].split("=")[0].equals("default-graph-uri")) {
 	        		this.defaultGraphs.add(parameters[x].split("=")[1]);
 	        	}
-	        	if (parameters[x].split("=")[0] == "named-graph-uri") {
+	        	if (parameters[x].split("=")[0].equals("named-graph-uri")) {
 	        		this.namedGraphs.add(parameters[x].split("=")[1]);
 	        	}
-	        	if (parameters[x].split("=")[0] == "username") {
+	        	if (parameters[x].split("=")[0].equals("username")) {
 	        		this.username = parameters[x].split("=")[1];
 	        	}
-	        	if (parameters[x].split("=")[0] == "password") {
+	        	if (parameters[x].split("=")[0].equals("password")) {
 	        		this.password = parameters[x].split("=")[1];
 	        	}
 	        }
