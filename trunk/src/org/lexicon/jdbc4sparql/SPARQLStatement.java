@@ -20,7 +20,10 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import com.hp.hpl.jena.rdf.model.*;
 import java.io.DataOutputStream;
-
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.content.StringBody; 
 
 public class SPARQLStatement implements Statement {
 
@@ -152,6 +155,19 @@ public class SPARQLStatement implements Statement {
 	}
 
 	public int executeUpdate(String sparql) throws SQLException {
+		
+		
+		HttpClient client = new DefaultHttpClient();
+		HttpPost post = new HttpPost(this.conn.getEndPoint());
+		post.addHeader("Content-Type", "application/x-www-form-urlencoded");		
+		post.addHeader("Content-Length", Integer.toString(sparql.getBytes().length));
+		try {
+			StringBody bodyContent = new StringBody(sparql);
+		}
+		catch (Exception e) {
+			throw new SQLException (e.getMessage());
+		}
+			
 		URL servicePoint = null;
 		try {
 			servicePoint = new URL(this.conn.getEndPoint());
