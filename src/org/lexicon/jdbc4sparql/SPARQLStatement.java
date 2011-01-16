@@ -18,12 +18,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.rdf.model.Model;
 import java.io.DataOutputStream;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.content.StringBody; 
+import org.apache.http.auth.UsernamePasswordCredentials; 
 
 public class SPARQLStatement implements Statement {
 
@@ -158,6 +159,7 @@ public class SPARQLStatement implements Statement {
 		
 		
 		HttpClient client = new DefaultHttpClient();
+		
 		HttpPost post = new HttpPost(this.conn.getEndPoint());
 		post.addHeader("Content-Type", "application/x-www-form-urlencoded");		
 		post.addHeader("Content-Length", Integer.toString(sparql.getBytes().length));
@@ -167,7 +169,8 @@ public class SPARQLStatement implements Statement {
 		catch (Exception e) {
 			throw new SQLException (e.getMessage());
 		}
-			
+		//HttpResponse response = client.execute(post);
+		/*	
 		URL servicePoint = null;
 		try {
 			servicePoint = new URL(this.conn.getEndPoint());
@@ -207,6 +210,7 @@ public class SPARQLStatement implements Statement {
 		catch (Exception e) {
 			throw new SQLException (e.toString());
 		}
+		*/
 		return 0;
 	}
 
