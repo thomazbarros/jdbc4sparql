@@ -25,6 +25,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.content.StringBody; 
 import org.apache.http.auth.UsernamePasswordCredentials; 
+import org.apache.http.HttpHost;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.entity.StringEntity;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.codec.binary.Base64;
 
 public class SPARQLStatement implements Statement {
 
@@ -157,60 +168,47 @@ public class SPARQLStatement implements Statement {
 
 	public int executeUpdate(String sparql) throws SQLException {
 		
-		
+		//create http client and set headers
 		HttpClient client = new DefaultHttpClient();
-		
+		HttpContext localContext = new BasicHttpContext();
 		HttpPost post = new HttpPost(this.conn.getEndPoint());
 		post.addHeader("Content-Type", "application/x-www-form-urlencoded");		
 		post.addHeader("Content-Length", Integer.toString(sparql.getBytes().length));
+		
+		//authentication
+		if (this.conn.getUsername() != null && this.conn.getPassword() != null) {
+			try {
+				UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(this.conn.getUsername(), this.conn.getPassword()); 
+	            BasicScheme scheme = new BasicScheme(); 
+	            Header authorizationHeader = scheme.authenticate(credentials, post); 
+	            post.addHeader(authorizationHeader); 
+			}
+			catch (Exception e) {
+				throw new SQLException (e.getMessage());
+			}
+		}
+		
+		//post body content
 		try {
-			StringBody bodyContent = new StringBody(sparql);
+			StringEntity myEntity = new StringEntity(sparql);
+			post.setEntity(myEntity);
 		}
 		catch (Exception e) {
 			throw new SQLException (e.getMessage());
 		}
-		//HttpResponse response = client.execute(post);
-		/*	
-		URL servicePoint = null;
+		
+		//now execute request
 		try {
-			servicePoint = new URL(this.conn.getEndPoint());
-			HttpURLConnection http = null;
-			http = (HttpURLConnection) servicePoint.openConnection();
-			if (this.conn.getUsername() != null && this.conn.getPassword() != null) {
-				http.setRequestProperty("Authorization", "Basic " + base64Encode((this.conn.getUsername() + ":" + this.conn.getPassword()).getBytes()));
+			HttpResponse response = client.execute(post);
+			StatusLine status = response.getStatusLine();
+			if (status.getStatusCode() != 200) {
+				throw new Exception (status.getStatusCode() + " - " + status.getReasonPhrase());
 			}
-			http.setRequestProperty("Accept", SPARQLStatement.acceptHeader);
-			http.setRequestProperty("User-agent", SPARQLStatement.userAgentHeader);
-			http.setRequestMethod("POST");
-			http.setRequestProperty("Content-Length", "" + Integer.toString(sparql.getBytes().length));
-			http.setDoInput(true);
-			http.setDoOutput(true);
-			
-			//Send request
-		    DataOutputStream wr = new DataOutputStream (http.getOutputStream ());
-		    wr.writeBytes (sparql);
-		    wr.flush ();
-		    wr.close ();
-			
-			http.connect();
-			int code = http.getResponseCode() ;
-			if (code >= 400) {
-				String message = URLDecoder.decode(http.getResponseMessage(), "UTF-8");
-				throw new SQLException (code+":"+message);
-			}	
-		}
-		catch (MalformedURLException e) {
-			String msg = "The server URL was malformed: " + servicePoint;
-			throw new SQLException (msg);
-		} 
-		catch (IOException e) {
-			String msg = "Could not make http request due to " + e.toString();
-			throw new SQLException (msg);
 		}
 		catch (Exception e) {
-			throw new SQLException (e.toString());
+			throw new SQLException (e.getMessage());
 		}
-		*/
+		
 		return 0;
 	}
 
