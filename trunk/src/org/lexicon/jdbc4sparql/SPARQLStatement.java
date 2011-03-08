@@ -184,7 +184,7 @@ public class SPARQLStatement implements Statement {
 	            post.addHeader(authorizationHeader); 
 			}
 			catch (Exception e) {
-				throw new SQLException (e.getMessage());
+				throw new SQLException ("ERROR1: " + e.getMessage());
 			}
 		}
 		
@@ -194,7 +194,7 @@ public class SPARQLStatement implements Statement {
 			post.setEntity(myEntity);
 		}
 		catch (Exception e) {
-			throw new SQLException (e.getMessage());
+			throw new SQLException ("ERROR2: " + e.getMessage());
 		}
 		
 		//now execute request
@@ -202,11 +202,11 @@ public class SPARQLStatement implements Statement {
 			HttpResponse response = client.execute(post);
 			StatusLine status = response.getStatusLine();
 			if (status.getStatusCode() != 200) {
-				throw new Exception (status.getStatusCode() + " - " + status.getReasonPhrase());
+				throw new Exception ("ERROR3: " + status.getStatusCode() + " - " + status.getReasonPhrase());
 			}
 		}
 		catch (Exception e) {
-			throw new SQLException (e.getMessage());
+			throw new SQLException ("ERROR4: " + e.getMessage());
 		}
 		
 		return 0;

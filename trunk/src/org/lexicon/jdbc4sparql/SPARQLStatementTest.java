@@ -25,6 +25,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +57,15 @@ public class SPARQLStatementTest {
 	@Before
 	public void setUp() throws Exception {
 		this.driverName = "org.lexicon.jdbc4sparql.SPARQLDriver"; 
-		this.sd = new SPARQLDriver();
-		this.con1 = (SPARQLConnection)sd.connect("jdbc:sparql:http://localhost:8890/sparql?username=dba&password=dynamite", null);
+		Class.forName(driverName);
+		Enumeration<java.sql.Driver> en = DriverManager.getDrivers();
+		
+		while (en.hasMoreElements()) {
+			java.sql.Driver d = en.nextElement();
+			System.out.println(d.getClass().getName());
+			
+		}
+		this.con1 = (SPARQLConnection)DriverManager.getConnection("jdbc:sparql:http://172.16.0.72/virtuoso/sparql?username=dba&password=w1llgr33nly", null);
 	}
 	
 	@Test
@@ -75,8 +83,8 @@ public class SPARQLStatementTest {
 	public void testConstructStatement() {
 		try {
 			Statement st = this.con1.createStatement();
-			ResultSet rs = st.executeQuery("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
-			assert (rs.getClass().isInstance(ModelFactory.createDefaultModel()));
+			Model rs = (Model)st.executeQuery("CONSTRUCT { ?s ?p ?o } WHERE {GRAPH ?g { ?s ?p ?o }. FILTER (?s = <http://www.openlinksw.com/schemas/virtrdf#DefaultQuadMap-G>)}");
+			assertTrue(rs.size() >= 0);
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
