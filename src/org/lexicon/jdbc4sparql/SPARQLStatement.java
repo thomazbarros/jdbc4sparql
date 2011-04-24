@@ -10,6 +10,11 @@ import com.hp.hpl.jena.query.*;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -21,8 +26,11 @@ import java.net.URLEncoder;
 import com.hp.hpl.jena.rdf.model.Model;
 import java.io.DataOutputStream;
 import org.apache.http.client.HttpClient;
+import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.mime.content.StringBody; 
 import org.apache.http.auth.UsernamePasswordCredentials; 
 import org.apache.http.HttpHost;
@@ -125,7 +133,8 @@ public class SPARQLStatement implements Statement {
 			
 			//Counted as SPARQL Update
 			if (query.isUnknownType()){
-				this.executeUpdate(sparql);
+				qeHTTP.execSelect();
+				//this.executeUpdate(sparql);
 				return true;
 			}
 			
@@ -171,42 +180,67 @@ public class SPARQLStatement implements Statement {
 		//create http client and set headers
 		HttpClient client = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
-		HttpPost post = new HttpPost(this.conn.getEndPoint());
-		post.addHeader("Content-Type", "application/x-www-form-urlencoded");		
-		post.addHeader("Content-Length", Integer.toString(sparql.getBytes().length));
+		//HttpGet post = null;
+		
+		String queryString =  "";
+		try {
+			queryString = "query="+ java.net.URLEncoder.encode(sparql,"UTF-8");
+		}
+		catch (Exception e) {
+			throw new SQLException ("ERROR Encoding Query: " + e.getMessage());
+		}
+		
+		int queryLength = queryString.getBytes().length;
+		HttpUriRequest request = null;
+		if (queryLength > 2000) {
+			try {
+				request = new HttpPost(this.conn.getEndPoint());
+				request.addHeader("Content-Type", "application/x-www-form-urlencoded");		
+				request.addHeader("Content-Length", Integer.toString(queryLength));
+				StringEntity myEntity = new StringEntity(queryString);
+				HttpPost tmp = (HttpPost)request;
+				tmp.setEntity(myEntity);
+			}
+			catch (Exception e) {
+				throw new SQLException ("error creating POST request: " + e.getMessage());
+			}
+		}
+		else {
+			request = new HttpGet(this.conn.getEndPoint() + "?" + queryString);
+		}
+		request.addHeader("Accepts", "application/sparql-results+xml");
 		
 		//authentication
 		if (this.conn.getUsername() != null && this.conn.getPassword() != null) {
 			try {
 				UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(this.conn.getUsername(), this.conn.getPassword()); 
 	            BasicScheme scheme = new BasicScheme(); 
-	            Header authorizationHeader = scheme.authenticate(credentials, post); 
-	            post.addHeader(authorizationHeader); 
+	            Header authorizationHeader = scheme.authenticate(credentials, request); 
+	            request.addHeader(authorizationHeader); 
 			}
 			catch (Exception e) {
-				throw new SQLException ("ERROR1: " + e.getMessage());
+				throw new SQLException ("error setting credentials: " + e.getMessage());
 			}
-		}
-		
-		//post body content
-		try {
-			StringEntity myEntity = new StringEntity(sparql);
-			post.setEntity(myEntity);
-		}
-		catch (Exception e) {
-			throw new SQLException ("ERROR2: " + e.getMessage());
 		}
 		
 		//now execute request
 		try {
-			HttpResponse response = client.execute(post);
+			HttpResponse response = client.execute(request);
 			StatusLine status = response.getStatusLine();
 			if (status.getStatusCode() != 200) {
-				throw new Exception ("ERROR3: " + status.getStatusCode() + " - " + status.getReasonPhrase());
+				throw new Exception ("server error: " + status.getStatusCode() + " - " + status.getReasonPhrase());
 			}
 		}
 		catch (Exception e) {
-			throw new SQLException ("ERROR4: " + e.getMessage());
+			/*for (int x = 0; x < e.getStackTrace().length; x++) {
+				System.out.println(e.getStackTrace()[x].getLineNumber());
+				System.out.println(e.getStackTrace()[x].getClassName());
+				System.out.println(e.getStackTrace()[x].getMethodName());
+				System.out.println(e.getStackTrace()[x].getFileName());
+				System.out.println(e.getStackTrace()[x].toString());
+			}*/
+			//System.out.println(e.getMessage());
+			throw new SQLException ("unknown exception: " + e.getMessage());
 		}
 		
 		return 0;
