@@ -65,7 +65,7 @@ public class SPARQLStatementTest {
 			System.out.println(d.getClass().getName());
 			
 		}
-		this.con1 = (SPARQLConnection)DriverManager.getConnection("jdbc:sparql:http://172.16.0.72/virtuoso/sparql?username=dba&password=w1llgr33nly", null);
+		this.con1 = (SPARQLConnection)DriverManager.getConnection("jdbc:sparql:http://localhost:8890/sparql?username=dba&password=dynamite", null);
 	}
 	
 	@Test
@@ -95,7 +95,7 @@ public class SPARQLStatementTest {
 	public void testInsertStatement() {
 		try {
 			Statement st = this.con1.createStatement();
-			st.executeUpdate("PREFIX dc: <http://purl.org/dc/elements/1.1/> INSERT DATA { <http://example/book3> dc:title \"A new book\" ; dc:creator  \"A.N.Other\" .}");
+			st.executeUpdate("PREFIX dc: <http://purl.org/dc/elements/1.1/> INSERT INTO <http://example/bookStore> { <http://example/book6> dc:title \"A new 2 book\" ; dc:creator  \"A.N.Other\" .} ");
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
