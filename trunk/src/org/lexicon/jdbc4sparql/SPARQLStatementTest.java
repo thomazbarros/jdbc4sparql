@@ -102,15 +102,5 @@ public class SPARQLStatementTest {
 		}
 	}
 	
-	@Test
-	public void testDeleteStatement() {
-		
-	}
-	
-	@Test
-	public void testAskStatement() {
-		
-	}
-	
 
 }
