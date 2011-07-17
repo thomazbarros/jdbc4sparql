@@ -44,6 +44,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.entity.StringEntity;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.codec.binary.Base64;
+import com.google.api.client.http.*;
 
 public class SPARQLStatement implements Statement {
 
@@ -177,11 +178,12 @@ public class SPARQLStatement implements Statement {
 
 	public int executeUpdate(String sparql) throws SQLException {
 		
+		
+		
 		//create http client and set headers
 		HttpClient client = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
-		//HttpGet post = null;
-		
+				
 		String queryString =  "";
 		try {
 			queryString = "query="+ java.net.URLEncoder.encode(sparql,"UTF-8");
@@ -232,14 +234,7 @@ public class SPARQLStatement implements Statement {
 			}
 		}
 		catch (Exception e) {
-			/*for (int x = 0; x < e.getStackTrace().length; x++) {
-				System.out.println(e.getStackTrace()[x].getLineNumber());
-				System.out.println(e.getStackTrace()[x].getClassName());
-				System.out.println(e.getStackTrace()[x].getMethodName());
-				System.out.println(e.getStackTrace()[x].getFileName());
-				System.out.println(e.getStackTrace()[x].toString());
-			}*/
-			//System.out.println(e.getMessage());
+			
 			throw new SQLException ("unknown exception: " + e.getMessage());
 		}
 		
