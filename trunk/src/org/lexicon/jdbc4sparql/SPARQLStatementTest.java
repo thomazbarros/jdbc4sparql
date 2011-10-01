@@ -54,6 +54,7 @@ public class SPARQLStatementTest {
 	SPARQLDriver sd;
 	SPARQLConnection con1;
 	
+	
 	@Before
 	public void setUp() throws Exception {
 		this.driverName = "org.lexicon.jdbc4sparql.SPARQLDriver"; 
@@ -65,20 +66,25 @@ public class SPARQLStatementTest {
 			System.out.println(d.getClass().getName());
 			
 		}
-		this.con1 = (SPARQLConnection)DriverManager.getConnection("jdbc:sparql:http://localhost:8890/sparql?username=dba&password=dynamite", null);
+		this.con1 = (SPARQLConnection)DriverManager.getConnection("jdbc:sparql:http://dbpedia.org/sparql", null);
 	}
+	
 	
 	@Test
 	public void testSelectStatement() throws Exception {
 		try {
 			Statement st = this.con1.createStatement();
-			ResultSet rs = st.executeQuery("SELECT ?s WHERE {?s ?p ?o} LIMIT 1");
+			ResultSet rs = st.executeQuery("PREFIX coo: <http://purl.org/coo/ns#> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX dbpedia: <http://dbpedia.org/> PREFIX vso: <http://purl.org/vso/ns#> SELECT distinct ?uri ?name ?transmissionURI ?transmissionName WHERE { SERVICE <http://volkswagen.co.uk/models> {	?uri rdf:type coo:Derivative; dc:title ?name; vso:transmission ?transmissionURI. } SERVICE <http://dbpedia.org> { ?transmissionURI dcterms:subject <http://dbpedia.org/resource/Category:Automobile_transmissions>; rdfs:label ?transmissionName. FILTER langMatches(lang(?transmissionName), 'en')} }");
+			while (rs.next()) {
+				System.out.println("go");
+			}
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 	}
 	
+	/*
 	@Test
 	public void testConstructStatement() {
 		try {
@@ -90,7 +96,8 @@ public class SPARQLStatementTest {
 			System.out.println(e.getMessage());
 		}
 	}
-	
+	*/
+	/*
 	@Test
 	public void testInsertStatement() {
 		try {
@@ -101,6 +108,6 @@ public class SPARQLStatementTest {
 			System.out.println(e.getMessage());
 		}
 	}
-	
+	*/
 
 }

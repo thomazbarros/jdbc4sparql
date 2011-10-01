@@ -86,7 +86,9 @@ public class SPARQLStatement implements Statement {
 	
 	public void close() throws SQLException {
 		this.closed = true;
-		this.resultSet.close();
+		if (this.resultSet != null) {
+			this.resultSet.close();
+		}
 	}
 	
 	public boolean execute(String sparql) throws SQLException {
@@ -96,7 +98,7 @@ public class SPARQLStatement implements Statement {
 			QueryEngineHTTP qeHTTP = QueryExecutionFactory.createServiceRequest(this.conn.getEndPoint(), query); 
 			
 			//set parameters
-			if (this.conn.getUsername() != null && this.conn.getPassword() != null) {
+			if ((this.conn.getUsername() != null && this.conn.getPassword() != null) && this.conn.getUsername().length() > 0) {
 				qeHTTP.setBasicAuthentication(this.conn.getUsername(), this.conn.getPassword().toCharArray());
 			}
 			
@@ -134,8 +136,7 @@ public class SPARQLStatement implements Statement {
 			
 			//Counted as SPARQL Update
 			if (query.isUnknownType()){
-				qeHTTP.execSelect();
-				//this.executeUpdate(sparql);
+				this.executeUpdate(sparql);
 				return true;
 			}
 			
@@ -180,7 +181,7 @@ public class SPARQLStatement implements Statement {
 		
 		
 		
-		//create http client and set headers
+	//create http client and set headers
 		HttpClient client = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 				
@@ -237,7 +238,7 @@ public class SPARQLStatement implements Statement {
 			
 			throw new SQLException ("unknown exception: " + e.getMessage());
 		}
-		
+	
 		return 0;
 	}
 
