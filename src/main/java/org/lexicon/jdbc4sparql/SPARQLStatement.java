@@ -6,7 +6,10 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QueryParseException;
+import com.hp.hpl.jena.query.Query;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Vector;
@@ -31,7 +34,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.mime.content.StringBody; 
 import org.apache.http.auth.UsernamePasswordCredentials; 
 import org.apache.http.HttpHost;
 import org.apache.http.protocol.HttpContext;
@@ -44,12 +46,11 @@ import org.apache.http.StatusLine;
 import org.apache.http.entity.StringEntity;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.codec.binary.Base64;
-import com.google.api.client.http.*;
 
 public class SPARQLStatement implements Statement {
 
 	private SPARQLConnection conn;
-	private ResultSet resultSet;
+	private java.sql.ResultSet resultSet;
 	private Vector<String> batches;
 	private boolean closed;
 	private int timeout;
@@ -122,7 +123,6 @@ public class SPARQLStatement implements Statement {
 			}
 			if (query.isConstructType()){
 				this.resultSet = new SPARQLConstructResultSet(qeHTTP.execConstruct(), this, query);
-				
 				return true;
 			}
 			if (query.isDescribeType()){
@@ -174,14 +174,15 @@ public class SPARQLStatement implements Statement {
 
 	public ResultSet executeQuery(String arg0) throws SQLException {
 		this.execute(arg0);
+		if (this.resultSet == null) {
+			throw new SQLException("Query not identified as a SELECT, ASK, CONSTRUCT or DESCRIBE type");
+		}
 		return this.resultSet;
 	}
 
 	public int executeUpdate(String sparql) throws SQLException {
 		
-		
-		
-	//create http client and set headers
+		//create http client and set headers
 		HttpClient client = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 				
